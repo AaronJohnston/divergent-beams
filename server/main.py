@@ -22,10 +22,12 @@ def status():
 @app.post("/v1/fuzz")
 def fuzz(params: FuzzParams):
     texts = []
-    for i in range(10):
+    for i in range(4):
         response = inference.generate(params.prompt, seed=i)
-        texts.append(response["text"])
-    embeddings = inference.embed(texts)["embeddings"]
+        texts.append(response.text)
+    embeddings = inference.embed(texts).embeddings
     clusters = clustering.cluster(embeddings)
 
-    return {"results": list(zip(texts, clusters))}
+    print(list(zip(texts, clusters, embeddings)))
+
+    return {"results": "none"}
