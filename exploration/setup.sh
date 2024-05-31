@@ -1,2 +1,2 @@
 pip install jupyterlab-code-formatter
-systemctl restart jupyter-server
+sudo systemctl restart jupyter-server
