@@ -1,7 +1,11 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from Environment import Environment
+from Inference import Inference
 
 app = FastAPI()
+env = Environment()
+inference = Inference(env)
 
 
 class FuzzParams(BaseModel):
@@ -15,4 +19,4 @@ def status():
 
 @app.post("/v1/fuzz")
 def fuzz(params: FuzzParams):
-    return {}
+    return {"result": inference.embed([params.prompt])}
