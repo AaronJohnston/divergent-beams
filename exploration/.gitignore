@@ -1,6 +1,8 @@
 .ipynb_checkpoints
 *.swp
 
+models/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
