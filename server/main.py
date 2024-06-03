@@ -7,8 +7,6 @@ from Clustering import Clustering
 
 app = FastAPI()
 env = Environment()
-inference = Inference(env)
-clustering = Clustering()
 
 
 class TreeParams(BaseModel):
