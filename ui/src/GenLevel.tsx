@@ -32,7 +32,7 @@ export default function GenLevel({
             {
                 level.map((node, idx) => {
                     return (
-                        <GenNode key={node.content} node={node} ref={(elem: HTMLElement) => nodesRef.current[idx] = elem} />
+                        <GenNode key={idx} node={node} ref={(elem: HTMLElement) => nodesRef.current[idx] = elem} />
                     );
                 })
             }
