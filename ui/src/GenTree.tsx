@@ -10,7 +10,7 @@ export default function GenTree({
     return (
         <div className="GenTree">
             {
-                levels.map(GenLevel)
+                levels.map((level) => <GenLevel level={level} />)
             }
         </div>
     );
