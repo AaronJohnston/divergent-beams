@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from Environment import Environment
 from Inference import Inference
@@ -10,7 +11,7 @@ inference = Inference(env)
 clustering = Clustering()
 
 
-class FuzzParams(BaseModel):
+class TreeParams(BaseModel):
     prompt: str
 
 
@@ -19,15 +20,5 @@ def status():
     return {"status": "ok"}
 
 
-@app.post("/v1/fuzz")
-def fuzz(params: FuzzParams):
-    texts = []
-    for i in range(4):
-        response = inference.generate(params.prompt, seed=i)
-        texts.append(response.text)
-    embeddings = inference.embed(texts).embeddings
-    clusters = clustering.cluster(embeddings)
-
-    print(list(zip(texts, clusters, embeddings)))
-
-    return {"results": "none"}
+@app.post("/v1/tree")
+def fuzz(params: TreeParams):
