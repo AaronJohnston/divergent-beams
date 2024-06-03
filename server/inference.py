@@ -6,6 +6,7 @@ import torch
 from datetime import timedelta
 import time
 from collections import namedtuple
+import json
 
 torch.random.manual_seed(0)
 
@@ -42,6 +43,19 @@ class Inference:
         keep_probs = probs[sorted_keep_indices]
         return keep_toks, keep_probs
 
+    def format_candidates(self, candidates):
+        candidate_dicts = []
+        for candidate in candidates:
+            candidate_dict = {
+                'content': candidate.token,
+                'prob': candidate.prob,
+            }
+            if candidate.parent_idx is not None:
+                candidate_dict['parent'] = candidate.parent_idx
+            candidate_dicts.append(candidate_dict)
+        data = json.dumps(candidate_dicts)
+        return f'event: level\ndata: {data}\n\n'
+
     async def candidates_generator(self, text: str):
         prompt = "<|user|>\n{} <|end|>\n<|assistant|>".format(text)
         inputs = self.tokenizer(prompt, return_tensors='pt').to('cuda')
@@ -77,7 +91,7 @@ class Inference:
                         new_candidates.append(new_candidate)
             candidates = new_candidates[:self.max_candidates]
 
-            yield candidates
+            yield self.format_candidates(candidates)
 
             print(i, p, len(candidates))
             for candidate in candidates:
