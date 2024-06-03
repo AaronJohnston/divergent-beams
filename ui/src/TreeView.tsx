@@ -1,3 +1,5 @@
+import './TreeView.css';
+
 export type Level = Node[];
 
 export type Node = {
@@ -13,8 +15,28 @@ export default function TreeView({
     levels: Level[]
 }) {
     return (
-        <div>
-        <h1>Tree View</h1>
+        <div className="TreeView">
+            {
+                levels.map(renderLevel)
+            }
+        </div>
+    );
+}
+
+function renderLevel(level: Level) {
+    return (
+        <div className="TreeView-Level">
+            {
+                level.map(renderNode)
+            }
+        </div>
+    );
+}
+
+function renderNode(node: Node) {
+    return (
+        <div className="TreeView-Node">
+            {node.content} ({node.prob})
         </div>
     );
 }

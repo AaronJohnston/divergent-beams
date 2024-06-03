@@ -1,0 +1,15 @@
+.TreeView {
+    display: flex;
+    flex-direction: row;
+}
+
+.TreeView-Level {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin-right: 5px;
+}
+
+.TreeView-Node {
+
+}
