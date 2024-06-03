@@ -55,6 +55,7 @@ class Inference:
         return candidate_dicts
 
     async def candidates_generator(self, text: str):
+        print(text)
         prompt = "<|user|>\n{} <|end|>\n<|assistant|>".format(text)
         inputs = self.tokenizer(prompt, return_tensors='pt')
 
@@ -69,7 +70,7 @@ class Inference:
         # OPTIM: Keep previous_key values
         # OPTIM: Use Tensors to keep track of candidates (with masked values)
         # OPTIM: Log probs
-        for i in list(range(10)):
+        for i in list(range(2)):
             new_candidates = []
             for candidate_idx, candidate in enumerate(candidates):
                 outputs = self.model(input_ids=candidate.sequence)

@@ -29,7 +29,7 @@ def status():
 
 @app.post("/v1/sample")
 def sample(params: TreeParams):
-    return StreamingResponse(generator(), media_type="text/event-stream")
+    return StreamingResponse(inference.candidates_generator(params.prompt), media_type="text/event-stream")
 
 
 if __name__ == "__main__":
