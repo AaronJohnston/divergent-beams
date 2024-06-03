@@ -61,18 +61,21 @@ function drawEdge(parent: Element, child: Element) {
 
     const svgTop = parentPointY < childPointY ? -height : 0;
 
+    // A margin of strokeWidth px is created around the SVG to show the line even in the horizontal or vertical case
+    const strokeWidth = 1;
+
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('width', (width + 2).toString()); // + 2 to show line in vertical case
-    svg.setAttribute('height', (height + 2).toString()); // + 2 to show line in horizontal case
-    svg.setAttribute('style', `position: absolute; top: ${svgTop + parentRect.height / 2}px; left: ${-width}px;`);
+    svg.setAttribute('width', (width + 2 * strokeWidth).toString());
+    svg.setAttribute('height', (height + 2 * strokeWidth).toString());
+    svg.setAttribute('style', `position: absolute; top: ${svgTop + parentRect.height / 2 - strokeWidth}px; left: ${-width - strokeWidth}px;`);
 
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', (linePoint1X + 1).toString());
-    line.setAttribute('y1', (linePoint1Y + 1).toString());
-    line.setAttribute('x2', (linePoint2X + 1).toString());
-    line.setAttribute('y2', (linePoint2Y + 1).toString());
+    line.setAttribute('x1', (linePoint1X + strokeWidth).toString());
+    line.setAttribute('y1', (linePoint1Y + strokeWidth).toString());
+    line.setAttribute('x2', (linePoint2X + strokeWidth).toString());
+    line.setAttribute('y2', (linePoint2Y + strokeWidth).toString());
     line.setAttribute('stroke', 'gray');
-    line.setAttribute('stroke-width', '1');
+    line.setAttribute('stroke-width', strokeWidth.toString());
 
     svg.appendChild(line);
 
