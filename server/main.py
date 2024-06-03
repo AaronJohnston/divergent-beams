@@ -7,6 +7,7 @@ from Clustering import Clustering
 
 app = FastAPI()
 env = Environment()
+inference = Inference()
 
 
 class TreeParams(BaseModel):
@@ -18,5 +19,6 @@ def status():
     return {"status": "ok"}
 
 
-@app.post("/v1/tree")
-def fuzz(params: TreeParams):
+@app.post("/v1/sample")
+def sample(params: TreeParams):
+    return StreamingResponse(inference.candidates_generator(params.prompt), media_type="text/event-stream")
