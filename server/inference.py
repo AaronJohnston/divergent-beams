@@ -11,23 +11,22 @@ import json
 torch.random.manual_seed(0)
 
 
-class Candidate(namedtuple('Candidate', ['parent_idx', 'token', 'sequence', 'prob'])):
+class Candidate(namedtuple('Candidate', ['parent_idx', 'content', 'sequence', 'prob'])):
     def __repr__(self):
-        string = self.tokenizer.decode(self.sequence[0])
-        return f'Candidate [{self.prob}]: {string} \n  ({self.sequence})'
+        return f'Candidate [{self.prob}]: {self.content}'
 
 
 class Inference:
     def __init__(self):
         self.model = AutoModelForCausalLM.from_pretrained(
             "microsoft/Phi-3-mini-4k-instruct",
-            device_map="auto",
-            torch_dtype="auto",
+            torch_dtype=torch.bfloat16,
+            # low_cpu_mem_usage=True,
             trust_remote_code=True,
         )
         self.tokenizer = AutoTokenizer.from_pretrained(
             "microsoft/Phi-3-mini-4k-instruct")
-        self.max_candidates = 100
+        self.max_candidates = 10
 
     def top_p_tokens(self, logits, top_p=0.9):
         """Does not support batches yet. logits must be of shape (VOCAB_SIZE)."""
@@ -43,25 +42,24 @@ class Inference:
         keep_probs = probs[sorted_keep_indices]
         return keep_toks, keep_probs
 
-    def format_candidates(self, candidates):
+    def get_candidate_dicts(self, candidates):
         candidate_dicts = []
         for candidate in candidates:
             candidate_dict = {
-                'content': candidate.token,
+                'content': candidate.content,
                 'prob': candidate.prob,
             }
             if candidate.parent_idx is not None:
                 candidate_dict['parent'] = candidate.parent_idx
             candidate_dicts.append(candidate_dict)
-        data = json.dumps(candidate_dicts)
-        return f'event: level\ndata: {data}\n\n'
+        return candidate_dicts
 
     async def candidates_generator(self, text: str):
         prompt = "<|user|>\n{} <|end|>\n<|assistant|>".format(text)
-        inputs = self.tokenizer(prompt, return_tensors='pt').to('cuda')
+        inputs = self.tokenizer(prompt, return_tensors='pt')
 
         candidates = [
-            Candidate(inputs.input_ids, 1.0)
+            Candidate(None, prompt, inputs.input_ids, 1.0)
         ]
 
         p = 0.99
@@ -71,7 +69,7 @@ class Inference:
         # OPTIM: Keep previous_key values
         # OPTIM: Use Tensors to keep track of candidates (with masked values)
         # OPTIM: Log probs
-        for i in list(range(100)):
+        for i in list(range(10)):
             new_candidates = []
             for candidate_idx, candidate in enumerate(candidates):
                 outputs = self.model(input_ids=candidate.sequence)
@@ -91,13 +89,15 @@ class Inference:
                         new_candidates.append(new_candidate)
             candidates = new_candidates[:self.max_candidates]
 
-            yield self.format_candidates(candidates)
+            candidate_dicts = self.get_candidate_dicts(candidates)
+            print(candidate_dicts)
 
-            print(i, p, len(candidates))
-            for candidate in candidates:
-                print(candidate)
-            print()
+            data = json.dumps(candidate_dicts)
+            yield f"event: level\ndata: {data}\n\n"
+
+            # print(i, p, len(candidates))
+            # for candidate in candidates:
+            #     print(candidate)
+            # print()
 
             p *= 0.5
-
-        return finished
