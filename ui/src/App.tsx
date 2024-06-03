@@ -1,5 +1,5 @@
 import './App.css'
-import TreeView from './TreeView'
+import GenTree from './GenTree'
 
 const levels = [
   [
@@ -27,10 +27,10 @@ const levels = [
 function App() {
 
   return (
-    <>
+    <div className="App-root">
       <header className="App-header">Phuzz</header>
-      <TreeView levels={levels}></TreeView>
-    </>
+      <GenTree levels={levels}></GenTree>
+    </div>
   )
 }
 

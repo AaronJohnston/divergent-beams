@@ -1,15 +1,17 @@
-.TreeView {
+.GenTree {
     display: flex;
     flex-direction: row;
+    height: 100%;
 }
 
-.TreeView-Level {
+.GenLevel {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
     margin-right: 5px;
 }
 
-.TreeView-Node {
-
+.GenNode {
+    text-align: left;
+    padding: 0 2px;
 }
