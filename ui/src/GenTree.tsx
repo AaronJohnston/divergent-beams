@@ -6,10 +6,13 @@ import { LevelSpec } from './types';
 const TREE_ENDPOINT = 'http://ec2-34-211-120-182.us-west-2.compute.amazonaws.com/api/v1/tree';
 
 export default function GenTree({
-    prompt
+    prompt,
+    setPrompt
 }: {
     prompt: string;
+    setPrompt: any;
 }) {
+    const [currPrompt, setCurrPrompt] = useState(prompt);
     const [levels, setLevels] = useState<LevelSpec[]>([]);
 
     console.log('RENDERING GENTREE', levels.toString());
@@ -42,15 +45,19 @@ export default function GenTree({
     }, [prompt]);
 
     return (
+        
         <div className="GenTree">
             <div className="GenPromptLevel">
                 <div className="GenPrompt">
-                    <div className="GenPromptTokens">
-                        {prompt}
-                    </div>
+                    <textarea className="GenPromptTokens" value={currPrompt} onChange={(event) => setCurrPrompt(event.target.value)} onBlur={() => setPrompt(currPrompt)}>
+                    </textarea>
+
                     <div className="GenPromptMenu">
-                        <p>EDIT PROMPT</p>
-                    </div>
+                    { currPrompt === prompt ?
+                        <p>CLICK PROMPT TO EDIT</p>
+                        :
+                        <button onClick={() => setPrompt(currPrompt)}>RUN NEW PROMPT</button>
+                    }</div> 
                 </div>
             </div>
             {
