@@ -28,7 +28,7 @@ class Inference:
         )
         self.tokenizer = AutoTokenizer.from_pretrained(
             "microsoft/Phi-3-mini-4k-instruct")
-        self.max_candidates = 10
+        self.max_candidates = 20
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
     def top_p_tokens(self, logits, top_p=0.9):
@@ -73,7 +73,7 @@ class Inference:
         # OPTIM: Keep previous_key values
         # OPTIM: Use Tensors to keep track of candidates (with masked values)
         # OPTIM: Log probs
-        for i in list(range(2)):
+        for i in list(range(100)):
             new_candidates = []
             for candidate_idx, candidate in enumerate(candidates):
 
