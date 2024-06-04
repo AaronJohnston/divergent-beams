@@ -13,7 +13,7 @@
 }
 
 .GenPrompt{
-    max-width: 12rem;
+    width: 12rem;
     display: flex;
     flex-direction: column;
     background-color: var(--color-secondary);
@@ -46,5 +46,8 @@
     text-align: left;
     padding: 0 3px;
     height: 1.5rem;
+    width: fit-content;
+    min-width: 10px;
+    align-items: flex-start;
     color: var(--color-text-dark);
 }

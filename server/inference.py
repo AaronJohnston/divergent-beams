@@ -104,11 +104,6 @@ class Inference:
             data = json.dumps(candidate_dicts)
             yield f"event: level\nid: {i}\ndata: {data}\n\n"
 
-            # print(i, p, len(candidates))
-            # for candidate in candidates:
-            #     print(candidate)
-            # print()
-
             p *= 0.5
 
         yield f"event: level\nid: END\ndata: []\n\n"
