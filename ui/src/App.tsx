@@ -8,7 +8,7 @@ function App() {
   return (
     <div className="App-root">
       <header className="App-header">
-        <h1>Phuzz</h1>
+        <h1>Tree</h1>
       </header>
       <GenTree prompt={prompt}></GenTree>
     </div>

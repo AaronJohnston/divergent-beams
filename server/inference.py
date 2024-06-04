@@ -18,15 +18,18 @@ class Candidate(namedtuple('Candidate', ['parent_idx', 'content', 'sequence', 'p
 
 class Inference:
     def __init__(self):
+        print('Flash Attn 2 available', is_flash_attn_2_available())
         self.model = AutoModelForCausalLM.from_pretrained(
             "microsoft/Phi-3-mini-4k-instruct",
             torch_dtype=torch.bfloat16,
-            # low_cpu_mem_usage=True,
+            device_map='auto',
             trust_remote_code=True,
+            # attn_implementation='flash_attention_2',
         )
         self.tokenizer = AutoTokenizer.from_pretrained(
             "microsoft/Phi-3-mini-4k-instruct")
         self.max_candidates = 10
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
     def top_p_tokens(self, logits, top_p=0.9):
         """Does not support batches yet. logits must be of shape (VOCAB_SIZE)."""
@@ -73,9 +76,14 @@ class Inference:
         for i in list(range(2)):
             new_candidates = []
             for candidate_idx, candidate in enumerate(candidates):
-                outputs = self.model(input_ids=candidate.sequence)
+
+                sequence_on_device = candidate.sequence.to(self.device)
+                outputs = self.model(input_ids=sequence_on_device)
+                logits = outputs.logits.to('cpu')
+                del sequence_on_device, outputs
+
                 new_toks, new_probs = self.top_p_tokens(
-                    outputs.logits[0, -1, :], p)
+                    logits[0, -1, :], p)
                 for new_tok, new_prob in zip(new_toks, new_probs):
                     new_candidate = Candidate(
                         candidate_idx,
