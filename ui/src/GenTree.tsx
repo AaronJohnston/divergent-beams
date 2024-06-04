@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import GenLevel from './GenLevel';
 import './GenTree.css';
 import { LevelSpec } from './types';
+import { useQuery } from '@tanstack/react-query';
 
 const TREE_ENDPOINT = 'http://localhost:8000/api/v1/tree'
 
@@ -36,12 +37,42 @@ export default function GenTree({
 }) {
     const [levels, setLevels] = useState<LevelSpec[]>([]);
 
+    // const { isPending, isError, data, error } = useQuery({
+    //     queryKey: ['GenTree', prompt],
+    //     queryFn: getEventStreamContent,
+    // });
+
+    // if (isPending) {
+    //     return <span>Loading...</span>
+    // }
+
+    // if (isError) {
+    //     return <span>Error: {error.message}</span>
+    // }
+
+
+
+    console.log('RENDERING GENTREE', levels.toString());
+
     useEffect(() => {
+        console.log('OPENING EVENT SOURCE');
         const eventSource = new EventSource(TREE_ENDPOINT + '?prompt=' + prompt);
-        eventSource.onmessage = (event) => {
+
+        eventSource.onerror = (error) => {
+            console.error('EventSource failed:', error);
+            eventSource.close();
+        }
+
+        eventSource.addEventListener('level', (event) => {
+            console.log(event);
             const data: LevelSpec = JSON.parse(event.data);
             setLevels((levels: LevelSpec[]) => [...levels, data]);
-        };
+        });
+
+        return () => {
+            console.log('CLOSING EVENT SOURCE');
+            eventSource.close();
+        }
     }, [prompt]);
 
     return (
