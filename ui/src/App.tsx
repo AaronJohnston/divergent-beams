@@ -1,10 +1,9 @@
-import { useState } from 'react';
-import './App.css'
-import GenTree from './GenTree'
+import { useState } from "react";
+import "./App.css";
+import GenTree from "./GenTree";
 
 function App() {
-
-  const [prompt, setPrompt] = useState('What is the closest star to the Sun?')
+  const [prompt, setPrompt] = useState("What is the closest star to the Sun?");
 
   return (
     <div className="App-root">
@@ -13,7 +12,7 @@ function App() {
       </header>
       <GenTree prompt={prompt} setPrompt={setPrompt}></GenTree>
     </div>
-  )
+  );
 }
 
 export default App;

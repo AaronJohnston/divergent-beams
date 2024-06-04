@@ -8,10 +8,10 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --color-bg: #F4F3F3;
+  --color-bg: #f4f3f3;
   --color-primary: #006989;
-  --color-secondary: #005C78;
-  --color-accent: #E88D67;
+  --color-secondary: #005c78;
+  --color-accent: #e88d67;
   --color-text-dark: #333;
   --color-text-light: var(--color-bg);
 
@@ -20,7 +20,8 @@
   background-color: var(--color-bg);
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100vh;
