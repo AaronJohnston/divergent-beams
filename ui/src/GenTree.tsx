@@ -43,6 +43,9 @@ export default function GenTree({
 
     return (
         <div className="GenTree">
+            <div className="GenTree-Prompt">
+                <p>{prompt}</p>
+            </div>
             {
                 levels.map((level, idx) => <GenLevel key={idx} level={level} />)
             }

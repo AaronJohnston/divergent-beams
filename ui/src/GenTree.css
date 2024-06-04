@@ -4,6 +4,17 @@
     height: 100%;
 }
 
+.GenTree-Prompt {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin-right: 5px;
+}
+
+.GenTree-Prompt p {
+
+}
+
 .GenLevel {
     display: flex;
     flex-direction: column;
@@ -15,4 +26,5 @@
     position: relative;
     text-align: left;
     padding: 0 2px;
+    color: var(--color-text-dark);
 }

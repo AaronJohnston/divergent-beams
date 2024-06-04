@@ -7,10 +7,12 @@ function App() {
 
   return (
     <div className="App-root">
-      <header className="App-header">Phuzz</header>
+      <header className="App-header">
+        <h1>Phuzz</h1>
+      </header>
       <GenTree prompt={prompt}></GenTree>
     </div>
   )
 }
 
-export default App
+export default App;

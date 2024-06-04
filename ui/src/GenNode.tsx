@@ -12,6 +12,6 @@ const GenNode = forwardRef(function GenNode({ node }: { node: NodeSpec}, ref) {
 export default GenNode;
 
 function getNodeColor(node: NodeSpec) {
-    return `rgba(223, 120, 97, ${node.prob * 0.7 + 0.3})`;
+    return `rgba(232, 141, 103, ${node.prob * 0.7 + 0.3})`;
 }
 

@@ -6,11 +6,17 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  height: 1.5rem;
+  background-color: var(--color-primary);
+  height: 2.8rem;
+  padding: 0 15px;
   display: flex;
   flex-direction: row;
   align-items: center;
+  font-weight: 700;
   justify-content: flex-start;
-  color: white;
+  color: var(--color-text-light);
+}
+
+.App-header h1 {
+  font-size: 1.5rem;
 }

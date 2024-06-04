@@ -19,7 +19,7 @@ export default function GenLevel({
             for (let i = 0; i < level.length; i++) {
                 const current = nodesRef.current[i];
                 const node = level[i];
-                if (current.parentElement && current.parentElement.previousElementSibling && node.parent !== undefined) {
+                if (current.parentElement && current.parentElement.previousElementSibling && current.parentElement.previousElementSibling.classList.contains('GenLevel') && node.parent !== undefined) {
                     const parent = current.parentElement.previousElementSibling.children[node.parent];
                     drawEdge(parent, current);
                 }
