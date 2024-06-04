@@ -19,7 +19,7 @@ export default function GenLevel({
             for (let i = 0; i < level.length; i++) {
                 const current = nodesRef.current[i];
                 const node = level[i];
-                if (current.parentElement && current.parentElement.previousElementSibling && current.parentElement.previousElementSibling.classList.contains('GenLevel') && node.parent !== undefined) {
+                if (current.parentElement && current.parentElement.previousElementSibling && node.parent !== undefined) {
                     const parent = current.parentElement.previousElementSibling.children[node.parent];
                     drawEdge(parent, current);
                 }
@@ -67,7 +67,7 @@ function drawEdge(parent: Element, child: Element) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('width', (width + 2 * strokeWidth).toString());
     svg.setAttribute('height', (height + 2 * strokeWidth).toString());
-    svg.setAttribute('style', `position: absolute; top: ${svgTop + parentRect.height / 2 - strokeWidth}px; left: ${-width - strokeWidth}px;`);
+    svg.setAttribute('style', `position: absolute; top: ${svgTop + childRect.height / 2 - strokeWidth}px; left: ${-width - strokeWidth}px;`);
 
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('x1', (linePoint1X + strokeWidth).toString());

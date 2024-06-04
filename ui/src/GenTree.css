@@ -4,27 +4,45 @@
     height: 100%;
 }
 
-.GenTree-Prompt {
+.GenPromptLevel {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    margin-right: 5px;
+    margin: 0 16px 0 32px;
 }
 
-.GenTree-Prompt p {
+.GenPrompt{
+    max-width: 12rem;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-secondary);
+    color: var(--color-text-light);
+}
 
+.GenPromptTokens {
+    padding: 16px 8px;
+}
+
+.GenPromptMenu {
+    background-color: var(--color-primary);
+    padding: 4px 8px;
+    font-size: 0.8rem;
+}
+
+.GenPromptMenu p {
+    opacity: 0.8;
 }
 
 .GenLevel {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    margin-right: 5px;
+    margin-right: 8px;
 }
 
 .GenNode {
     position: relative;
     text-align: left;
-    padding: 0 2px;
+    padding: 0 3px;
     color: var(--color-text-dark);
 }
