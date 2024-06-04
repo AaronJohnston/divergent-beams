@@ -54,7 +54,7 @@ class Inference:
             candidate_dicts.append(candidate_dict)
         return candidate_dicts
 
-    async def candidates_generator(self, text: str):
+    def candidates_generator(self, text: str):
         print(text)
         prompt = "<|user|>\n{} <|end|>\n<|assistant|>".format(text)
         inputs = self.tokenizer(prompt, return_tensors='pt')
@@ -94,7 +94,7 @@ class Inference:
             print(candidate_dicts)
 
             data = json.dumps(candidate_dicts)
-            yield f"event: level\ndata: {data}\n\n"
+            yield f"event: level\nid: {i}\ndata: {data}\n\n"
 
             # print(i, p, len(candidates))
             # for candidate in candidates:
@@ -102,3 +102,5 @@ class Inference:
             # print()
 
             p *= 0.5
+
+        yield f"event: level\nid: END\ndata: []\n\n"
