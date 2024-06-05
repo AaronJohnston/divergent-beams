@@ -4,7 +4,7 @@ import "./GenTree.css";
 import { LevelSpec } from "./types";
 
 const TREE_ENDPOINT =
-  "http://ec2-34-211-120-182.us-west-2.compute.amazonaws.com/api/v1/tree";
+  "http://ec2-52-89-34-232.us-west-2.compute.amazonaws.com/api/v1/tree";
 
 export default function GenTree({
   prompt,
