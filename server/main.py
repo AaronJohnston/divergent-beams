@@ -7,9 +7,11 @@ from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+from InferenceTensor import InferenceTensor
+
 app = FastAPI()
 env = Environment()
-inference = Inference()
+inference = InferenceTensor()
 
 app.add_middleware(
     CORSMiddleware,

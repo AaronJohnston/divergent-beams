@@ -13,7 +13,7 @@ torch.random.manual_seed(0)
 # Not directly comparable to legacy Inference yet --:
 # - Remove p falloff from original
 # - Are max candidates and max new tokens taken into account the same way?
-class Inference:
+class InferenceTensor:
     def __init__(self):
         self.model = AutoModelForCausalLM.from_pretrained(
             "microsoft/Phi-3-mini-4k-instruct",
@@ -29,6 +29,7 @@ class Inference:
 
         self.max_candidates = 20
         self.max_new_tokens = 100
+        self.batch_size = 8
         self.p_falloff = 0.5 # UNIMPLEMENTED
         self.prune_similar_sequences = True # UNIMPLEMENTED
         self.prune_similar_branches = True # UNIMPLEMENTED
@@ -38,9 +39,9 @@ class Inference:
         print(text)
         candidates, candidate_logprobs = self._init_candidates(text)
         for i in range(self.max_new_tokens):
-            candidates, candidate_parents, candidate_logprobs = self._infer(candidates, candidate_logprobs)
+            candidates, candidate_parents, candidate_logprobs = self._infer(candidates[:self.max_candidates, ...], candidate_logprobs[:self.max_candidates, ...])
             candidate_texts = self.tokenizer.batch_decode(candidates[:, -1])
-            candidate_dicts = map(lambda text, parent, logprob: {'content': text, 'parent': parent, 'prob': logprob}, zip(candidate_texts, candidate_parents, candidate_logprobs))
+            candidate_dicts = list(map(lambda text, parent, logprob: {'content': text, 'parent': parent, 'prob': logprob}, zip(candidate_texts, candidate_parents, candidate_logprobs)))
             data = json.dumps(candidate_dicts)
             yield f"event: level\nid: {i}\ndata: {data}\n\n"
 
@@ -102,7 +103,7 @@ class Inference:
                 
                 # TODO: Pruning step based on K-Means Clustering of embeddings here
                 
-                new_batch_candidates, new_batch_candidate_parents, new_batch_candidate_logprobs = self.top_p_single_batch(batch_outputs.logits, batch_candidates, batch_candidate_logprobs)
+                new_batch_candidates, new_batch_candidate_parents, new_batch_candidate_logprobs = self._top_p_single_batch(batch_outputs.logits, batch_candidates, batch_candidate_logprobs)
                 new_candidates_list.append(new_batch_candidates)
                 new_candidate_parents_list.append(new_batch_candidate_parents)
                 new_candidate_logprobs_list.append(new_batch_candidate_logprobs)
