@@ -36,7 +36,15 @@ class Inference:
 
     def candidates_generator(self, text: str):
         print(text)
-        candidates, candidate_parents, candidate_logprobs = self._init_candidates(text)
+        candidates, candidate_logprobs = self._init_candidates(text)
+        for i in range(self.max_new_tokens):
+            candidates, candidate_parents, candidate_logprobs = self._infer(candidates, candidate_logprobs)
+            candidate_texts = self.tokenizer.batch_decode(candidates[:, -1])
+            candidate_dicts = map(lambda text, parent, logprob: {'content': text, 'parent': parent, 'prob': logprob}, zip(candidate_texts, candidate_parents, candidate_logprobs))
+            data = json.dumps(candidate_dicts)
+            yield f"event: level\nid: {i}\ndata: {data}\n\n"
+
+        yield f"event: level\nid: END\ndata: []\n\n"
 
     def _init_candidates(self, text: str):
         prompt = "<|user|>\n{} <|end|>\n<|assistant|>".format(text)
@@ -44,10 +52,9 @@ class Inference:
         print(self.tokenizer.batch_decode(inputs.input_ids))
 
         candidates = inputs.input_ids.to(self.device)
-        candidate_parents = torch.zeros((1), dtype=torch.long, device=self.device)
         candidate_logprobs = torch.zeros((1), dtype=torch.float32, device=self.device)
 
-        return candidates, candidate_parents, candidate_logprobs
+        return candidates, candidate_logprobs
 
     def _top_p_single_batch(self, logits, candidates, candidate_logprobs):
         last_tok_logits = logits[:, -1, :]
