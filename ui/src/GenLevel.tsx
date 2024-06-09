@@ -51,7 +51,7 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
               const auntElement =
                 current.parentElement.parentElement.previousElementSibling
                   .children[1].children[aunt];
-              drawEdge(auntElement, current);
+              drawEdge(auntElement, current, "#35495522");
             }
           }
         }
@@ -62,7 +62,7 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
   return rendered;
 }
 
-function drawEdge(parent: Element, child: Element) {
+function drawEdge(parent: Element, child: Element, color = "#354955") {
   const parentRect = parent.getBoundingClientRect();
   const childRect = child.getBoundingClientRect();
 
@@ -101,7 +101,7 @@ function drawEdge(parent: Element, child: Element) {
   line.setAttribute("y1", (linePoint1Y + strokeWidth).toString());
   line.setAttribute("x2", (linePoint2X + strokeWidth).toString());
   line.setAttribute("y2", (linePoint2Y + strokeWidth).toString());
-  line.setAttribute("stroke", "gray");
+  line.setAttribute("stroke", color);
   line.setAttribute("stroke-width", strokeWidth.toString());
 
   svg.appendChild(line);
