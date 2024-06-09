@@ -3,6 +3,7 @@ import "./App.css";
 import GenTree from "./GenTree";
 import PromptInput from "./PromptInput";
 import { LevelSpec } from "./types";
+import Generations from "./Generations";
 
 const TREE_ENDPOINT =
   "http://ec2-52-89-34-232.us-west-2.compute.amazonaws.com/api/v1/tree";
@@ -44,6 +45,7 @@ function App() {
       </header>
       <PromptInput evaluatePrompt={evaluatePrompt}></PromptInput>
       <GenTree levels={levels}></GenTree>
+      <Generations></Generations>
     </div>
   );
 }

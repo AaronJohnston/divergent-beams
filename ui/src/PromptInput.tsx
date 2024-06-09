@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Switch from "react-switch";
 
 function PromptInput({
   evaluatePrompt,
@@ -8,15 +9,35 @@ function PromptInput({
   const [currPrompt, setCurrPrompt] = useState(
     "What is the closest star to the Earth?"
   );
+  const [embedPrune, setEmbedPrune] = useState(false);
 
   return (
-    <div className="PromptInput-root">
+    <div className="PromptInput">
       <textarea
-        className="GenPromptTokens"
         value={currPrompt}
         onChange={(event) => setCurrPrompt(event.target.value)}
-        onBlur={() => evaluatePrompt(currPrompt)}
+        // onBlur={() => evaluatePrompt(currPrompt)}
       ></textarea>
+      <div className="PromptInput-menu">
+        <label className="PromptInput-label">
+          <Switch
+            className="PromptInput-switch"
+            checked={embedPrune}
+            onChange={setEmbedPrune}
+            height={20}
+            width={40}
+            onColor="#7fd293"
+            offColor="#aaa"
+          ></Switch>
+          Embed Prune
+        </label>
+        <button
+          className="PromptInput-submit"
+          onClick={() => evaluatePrompt(currPrompt)}
+        >
+          Evaluate
+        </button>
+      </div>
     </div>
   );
 }

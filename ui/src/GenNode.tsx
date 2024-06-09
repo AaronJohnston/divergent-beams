@@ -1,7 +1,10 @@
 import { forwardRef } from "react";
 import { NodeSpec } from "./types";
 
-const GenNode = forwardRef(function GenNode({ node }: { node: NodeSpec }, ref) {
+const GenNode = forwardRef<HTMLDivElement, { node: NodeSpec }>(function GenNode(
+  { node }: { node: NodeSpec },
+  ref
+) {
   return (
     <div
       className="GenNode"

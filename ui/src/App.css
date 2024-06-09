@@ -8,16 +8,16 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --color-bg: #fdf9ec;
-  --color-primary: #006989;
-  --color-secondary: #005c78;
-  --color-accent: #e88d67;
-  --color-text-dark: #333;
-  --color-text-light: var(--color-bg);
+  --bg: #fdf9ec;
+  --primary: #006989;
+  --secondary: #005c78;
+  --accent: #f7978d;
+  --dark-text: #333;
+  --light-text: var(--bg);
 
   color-scheme: light dark;
-  color: var(--color-primary);
-  background-color: var(--color-bg);
+  color: var(--primary);
+  background-color: var(--bg);
 }
 
 html,
@@ -26,6 +26,7 @@ body {
   padding: 0;
   height: 100vh;
   width: 100vw;
+  font-size: 1rem;
 }
 
 p {
@@ -41,7 +42,7 @@ p {
 }
 
 .App-header {
-  background-color: var(--color-primary);
+  background-color: var(--primary);
   height: 2.8rem;
   padding: 0 15px;
   display: flex;
@@ -49,11 +50,68 @@ p {
   align-items: center;
   font-weight: 700;
   justify-content: flex-start;
-  color: var(--color-text-light);
+  color: var(--light-text);
 }
 
 .App-header h1 {
   font-size: 1.5rem;
+}
+
+.PromptInput {
+  display: flex;
+  flex-direction: row;
+  border-radius: 10px;
+  height: fit-content;
+  margin: 15px;
+  border: solid 2px var(--primary);
+}
+
+.PromptInput textarea {
+  border: none;
+  resize: none;
+  color: var(--primary);
+  background-color: transparent;
+  flex-grow: 1;
+  font-size: 1rem;
+  padding: 15px;
+  height: 5.5rem;
+}
+
+.PromptInput-menu {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  background-color: var(--primary);
+  color: var(--light-text);
+  padding: 15px;
+  font-size: 1rem;
+  line-height: 20px;
+}
+
+.PromptInput-label {
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.PromptInput-switch {
+  line-height: 20px;
+  margin-right: 10px;
+}
+
+.PromptInput-submit {
+  margin-top: auto;
+  background-color: var(--accent);
+  border: none;
+  color: var(--light-text);
+  font-size: 1rem;
+  padding: 5px;
+}
+
+.PromptInput-submit:hover {
+  cursor: pointer;
 }
 
 .GenTree {
@@ -61,57 +119,6 @@ p {
   flex-direction: row;
   height: 100%;
   overflow-x: scroll;
-}
-
-.GenPromptLevel {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  margin: 0 16px 0 32px;
-}
-
-.GenPrompt {
-  min-width: 12rem;
-  min-height: 5rem;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--color-secondary);
-  color: var(--color-text-light);
-}
-
-.GenPromptTokens {
-  padding: 16px 8px;
-  background-color: var(--color-secondary);
-  min-width: 12rem;
-  min-height: 5rem;
-  border: none;
-}
-
-.GenPromptMenu {
-  background-color: var(--color-primary);
-  height: 1.8rem;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-
-.GenPromptMenu p {
-  width: 100%;
-  font-size: 0.7rem;
-  opacity: 0.8;
-  margin: 4px 8px;
-  text-align: center;
-}
-
-.GenPromptMenu button {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 4px 8px;
-  background-color: var(--color-accent);
-  border: none;
-  cursor: pointer;
 }
 
 .GenLevel {
