@@ -9,8 +9,9 @@
   -moz-osx-font-smoothing: grayscale;
 
   --bg: #fdf9ec;
-  --primary: #006989;
-  --secondary: #005c78;
+  --primary: #1e4e6b;
+  --class-a: #d1e3eb;
+  --class-b: #afc6d0;
   --accent: #f7978d;
   --dark-text: #333;
   --light-text: var(--bg);
@@ -173,18 +174,29 @@ button:hover {
   display: flex;
   flex-direction: column;
   justify-content: stretch;
+  margin-right: 8px;
 }
 
 .GenLevel-label {
-  height: 8px;
-  background-color: var(--accent);
+  height: 1rem;
+  line-height: 1rem;
+  font-size: 0.8rem;
+  margin-bottom: 20px;
+  padding: 0 3px;
+}
+
+.GenLevel-label.k_means {
+  background-color: var(--class-a);
+}
+
+.GenLevel-label.top_p {
+  background-color: var(--class-b);
 }
 
 .GenLevel-nodes {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  margin-right: 8px;
 }
 
 .GenNode {

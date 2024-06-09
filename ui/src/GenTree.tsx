@@ -19,7 +19,7 @@ export default function GenTree({
         </div>
       )}
       <div className="GenLevel">
-        <div className="GenLevel-label">PROMPT</div>
+        <div className="GenLevel-label"></div>
         <div className="GenLevel-nodes">
           <div className="GenTree-prompt">PROMPT</div>
         </div>
