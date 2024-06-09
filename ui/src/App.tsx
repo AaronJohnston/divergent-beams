@@ -50,7 +50,7 @@ function App() {
   return (
     <div className="App-root">
       <header className="App-header">
-        <h1>LLM Output Space</h1>
+        <h1>Disparate Beams</h1>
       </header>
       <div className="App-content">
         <PromptInput

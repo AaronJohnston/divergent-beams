@@ -7,12 +7,23 @@ from datetime import timedelta
 import time
 from collections import namedtuple
 import json
+from sklearn.cluster import KMeans
 
 torch.random.manual_seed(0)
 
-# Not directly comparable to legacy Inference yet --:
-# - Remove p falloff from original
-# - Are max candidates and max new tokens taken into account the same way?
+# Debugging functions used in interactive mode in Jupyter notebook
+def D(*args):
+    pass
+
+def DS(*args):
+    pass
+
+def check_gpu(*args):
+    pass
+
+def display(*args):
+    pass
+
 class InferenceTensor:
     def __init__(self):
         self.model = AutoModelForCausalLM.from_pretrained(
@@ -27,31 +38,38 @@ class InferenceTensor:
             "microsoft/Phi-3-mini-4k-instruct")
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
-        self.max_candidates = 20
-        self.max_new_tokens = 100
+        self.max_new_tokens = 10
         self.batch_size = 8
-        self.p_falloff = 0.5 # UNIMPLEMENTED
-        self.prune_similar_sequences = True # UNIMPLEMENTED
-        self.prune_similar_branches = True # UNIMPLEMENTED
-        self.prune_similar_embeddings = True # UNIMPLEMENTED
-
+        
     def candidates_generator(self, top_p: float, max_beams: int, prompt: str):
         print(prompt)
         candidates, candidate_logprobs = self._init_candidates(prompt)
         for level_idx in range(self.max_new_tokens):
-            candidates, candidate_parents, candidate_logprobs = self._infer(candidates[:self.max_candidates, ...], candidate_logprobs[:self.max_candidates, ...], top_p)
-            candidate_texts = self.tokenizer.batch_decode(candidates[:, -1])
-            candidate_dicts = []
-            for i in range(len(candidate_texts)):
-                candidate_dicts.append({'content': candidate_texts[i], 'parent': candidate_parents[i].item(), 'prob': candidate_logprobs[i].item()})
-            data = json.dumps(candidate_dicts)
-            yield f"event: level\nid: {level_idx}\ndata: {data}\n\n"
+            logits, embeddings = self._infer(candidates[:self.max_candidates, ...], candidate_logprobs[:self.max_candidates, ...])
+        
+            if candidates.shape[0] > max_beams:
+                candidates, candidate_parents, candidate_logprobs, logits = self._k_means(logits, embeddings, candidates, candidate_logprobs, max_beams)
+                yield self._format_candidates('k_means', f"{level_idx}-k", candidates, candidate_parents, candidate_logprobs)
+
+            candidates, candidate_parents, candidate_logprobs = self._top_p(logits, candidates, candidate_logprobs, top_p)
+            yield self._format_candidates('top_p', f"{level_idx}-p", candidates, candidate_parents, candidate_logprobs)
 
         yield f"event: level\nid: END\ndata: []\n\n"
 
-    def _init_candidates(self, prompt: str):
-        formatted_prompt = "<|user|>\n{} <|end|>\n<|assistant|>".format(prompt)
-        inputs = self.tokenizer(formatted_prompt, return_tensors='pt')
+    def _format_candidates(self, event: str, idx: int, candidates, candidate_parents, candidate_logprobs):
+        D(candidate_parents, 'candidate_parents')
+        candidate_texts = self.tokenizer.batch_decode(candidates[:, -1])
+        candidate_probs = candidate_logprobs.exp()
+        candidate_dicts = []
+        for i in range(len(candidate_texts)):
+            candidate_dicts.append({'content': candidate_texts[i], 'parents': candidate_parents[i], 'prob': candidate_probs[i].item()})
+        data = json.dumps(candidate_dicts)
+        return f"event: {event}\nid: {idx}\ndata: {data}\n\n"
+        
+    def _init_candidates(self, text: str):
+        prompt = "<|user|>\n{} <|end|>\n<|assistant|>".format(text)
+        inputs = self.tokenizer(prompt, return_tensors='pt')
+        D(inputs.input_ids, 'input_ids')
         print(self.tokenizer.batch_decode(inputs.input_ids))
 
         candidates = inputs.input_ids.to(self.device)
@@ -59,55 +77,109 @@ class InferenceTensor:
 
         return candidates, candidate_logprobs
 
-    def _top_p_single_batch(self, logits, candidates, candidate_logprobs, top_p):
+    def _k_means(self, logits, embeddings, candidates, candidate_logprobs, max_beams):
+        D(candidates, 'candidates')
+        D(candidate_logprobs, 'candidate_logprobs')
+        # === CPU ===
+        embeddings_np = embeddings.float().numpy(force=True)
+        D(embeddings_np, 'embeddings_np')
+        k_means = KMeans(n_clusters=min(2, embeddings_np.shape[0]), random_state=0, n_init="auto")
+        k_mean_space = k_means.fit_transform(embeddings_np)
+        D(k_mean_space, 'k_mean_space')
+        k_mean_clusters = k_means.predict(embeddings_np)
+        D(k_mean_clusters, 'k_mean_clusters')
+        k_mean_logprob_mass = np.bincount(k_mean_clusters, weights=candidate_logprobs.cpu())
+        D(k_mean_logprob_mass, 'k_mean_logprob_mass')
+        closest = np.argmin(k_mean_space, axis=0)
+        D(closest, 'closest')
+        # === END CPU ===
+        
+        closest_indices = torch.from_numpy(closest).to(self.device)
+        new_candidates = candidates.index_select(0, closest_indices)
+        D(new_candidates, 'new_candidates')
+        new_candidate_parents = [torch.nonzero(torch.from_numpy(k_mean_clusters).to(self.device) == i).squeeze(-1).tolist() for i in range(new_candidates.shape[0])]
+        D(new_candidate_parents, 'new_candidate_parents')
+        new_candidate_logprobs = torch.from_numpy(k_mean_logprob_mass).to(self.device)
+        D(new_candidate_logprobs, 'new_candidate_logprobs')
+        new_candidate_logits = logits.index_select(0, closest_indices)
+        
+        return new_candidates, new_candidate_parents, new_candidate_logprobs, new_candidate_logits
+        
+    def _top_p(self, logits, candidates, candidate_logprobs, top_p):
+        D(candidates, 'candidates')
+        D(candidate_logprobs, 'candidate_logprobs')
+        
         last_tok_logits = logits[:, -1, :]
-        
+        D(last_tok_logits, 'last_tok_logits')
+
         sorted_logits, sorted_indices = torch.sort(last_tok_logits, descending=True, dim=-1)
+        DS(sorted_logits, 'sorted_logits')
+        DS(sorted_indices, 'sorted_indices')
         sorted_probs = F.softmax(sorted_logits, dim=-1)
+        D(sorted_probs, 'sorted_probs')
+        display(sorted_probs.sum(dim=1))
         cum_probs = torch.cumsum(sorted_probs, dim=-1)
-        
+        D(cum_probs, 'cum_probs')
+
         # Create tensor of bools indicating which indices are cumulatively less than top_p
         keep_indices = cum_probs < top_p
 
         # Keep the last element that went over top_p
         keep_indices[:, 1:] = keep_indices[:, :-1].clone() # Is this inefficient?
         keep_indices[:, 0] = 1  # Always keep the first element
-        
+        D(keep_indices, 'keep_indices')
+
         new_candidate_parents = keep_indices.nonzero()[:, 0]
-        
+        D(new_candidate_parents, 'new_candidate_parents')
+
         # OPTIM: Potential optimization -- have a fixed tensor of size (max_candidates, max_tokens) and copy this into that (batch-aware).
         # OPTIM: consider which of these operations can be done in-place to prevent new allocations?
         carryover_candidates = candidates.index_select(0, new_candidate_parents)
-        carryover_candidate_logprobs = candidate_logprobs.index_select(0, new_candidate_parents)  # Not strictly necessary since 1d
-        
-        new_candidate_toks = sorted_indices[keep_indices].unsqueeze(1)
-        new_candidate_tok_logprobs = sorted_probs[keep_indices].log()
-        
-        new_candidates = torch.cat([carryover_candidates, new_candidate_toks], dim=1)
-        new_candidate_logprobs = carryover_candidate_logprobs.add_(new_candidate_tok_logprobs)
-        
-        return new_candidates, new_candidate_parents, new_candidate_logprobs
-        
+        D(carryover_candidates, 'carryover_candidates')
 
-    def _infer(self, candidates, candidate_logprobs, top_p):
+        # Similar code could be used to trace entire origin of sequence. For now since server just traces parent of the preceding generation, not needed
+        # carryover_candidate_parents = candidate_parents.index_select(0, carryover_candidate_indices)  # Not strictly necessary since 1d
+        # D(carryover_candidate_parents, 'carryover_candidate_parents')
+
+        carryover_candidate_logprobs = candidate_logprobs.index_select(0, new_candidate_parents)  # Not strictly necessary since 1d
+        D(carryover_candidate_logprobs, 'carryover_candidate_logprobs')
+
+        new_candidate_toks = sorted_indices[keep_indices].unsqueeze(1)
+        D(new_candidate_toks, 'new_candidate_toks')
+        new_candidate_tok_logprobs = sorted_probs[keep_indices].log()
+        D(new_candidate_tok_logprobs, 'new_candidate_tok_logprobs')
+
+        new_candidates = torch.cat([carryover_candidates, new_candidate_toks], dim=1)
+        D(new_candidates, 'new_candidates')
+        new_candidate_logprobs = carryover_candidate_logprobs.add_(new_candidate_tok_logprobs)
+        D(new_candidate_logprobs, 'new_candidate_logprobs')
+
+        return new_candidates, new_candidate_parents.unsqueeze(-1).tolist(), new_candidate_logprobs
+
+
+    def _infer(self, candidates, candidate_logprobs):
         with torch.inference_mode():
             num_batches = (candidates.shape[0] + self.batch_size - 1) // self.batch_size  # Round up to nearest whole number of batches
             print('\nnum_batches', num_batches)
-            new_candidates_list = []
-            new_candidate_parents_list = []
-            new_candidate_logprobs_list = []
 
+            check_gpu('infer start')
+            output_logits_list = []
+            output_embeddings_list = []
             for i in range(0, num_batches, 1):
                 batch_candidates = candidates[i * self.batch_size:(i + 1) * self.batch_size]
+                DS(batch_candidates, 'batch_candidates')
                 batch_candidate_logprobs = candidate_logprobs[i * self.batch_size:(i + 1) * self.batch_size]
+                DS(batch_candidate_logprobs, 'batch_candidate_logprobs')
 
-                batch_outputs = self.model(input_ids=batch_candidates)
-                
-                # TODO: Pruning step based on K-Means Clustering of embeddings here
-                
-                new_batch_candidates, new_batch_candidate_parents, new_batch_candidate_logprobs = self._top_p_single_batch(batch_outputs.logits, batch_candidates, batch_candidate_logprobs, top_p)
-                new_candidates_list.append(new_batch_candidates)
-                new_candidate_parents_list.append(new_batch_candidate_parents)
-                new_candidate_logprobs_list.append(new_batch_candidate_logprobs)
-                
-            return torch.cat(new_candidates_list), torch.cat(new_candidate_parents_list), torch.cat(new_candidate_logprobs_list)
+                batch_outputs = self.model(input_ids=batch_candidates, output_hidden_states=True)
+                DS(batch_outputs.logits, 'batch_logits')
+                DS(batch_outputs.hidden_states[-1], 'hidden_states[-1]')
+
+                output_logits_list.append(batch_outputs.logits)
+                output_embeddings_list.append(batch_outputs.hidden_states[-1][:,-1,:])
+                check_gpu('infer - after batch run')
+
+            output_logits = torch.cat(output_logits_list, dim=0)
+            output_embeddings = torch.cat(output_embeddings_list, dim=0)
+            
+            return output_logits, output_embeddings
