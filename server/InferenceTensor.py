@@ -169,7 +169,7 @@ class InferenceTensor:
         new_candidate_logprobs = carryover_candidate_logprobs.add_(new_candidate_tok_logprobs)
         D(new_candidate_logprobs, 'new_candidate_logprobs')
 
-        return new_candidates, new_candidate_parents, new_candidate_logprobs
+        return new_candidates, new_candidate_parents.tolist(), new_candidate_logprobs
 
 
     def _infer(self, candidates, candidate_logprobs):
