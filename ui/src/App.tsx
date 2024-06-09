@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./App.css";
 import GenTree from "./GenTree";
 import PromptInput from "./PromptInput";
-import { LevelSpec } from "./types";
+import { LevelSpec, PromptOptions } from "./types";
 import Generations from "./Generations";
 
 const TREE_ENDPOINT =
@@ -11,9 +11,10 @@ const TREE_ENDPOINT =
 function App() {
   const [levels, setLevels] = useState<LevelSpec[]>([]);
 
-  const evaluatePrompt = (prompt: string) => {
+  const evaluatePrompt = (promptOptions: PromptOptions) => {
     console.log("OPENING EVENT SOURCE");
-    const eventSource = new EventSource(TREE_ENDPOINT + "?prompt=" + prompt);
+    const url = `${TREE_ENDPOINT}?topP=${promptOptions.topP}&maxBeams={promptOptions.maxBeams}&prompt=${promptOptions.prompt}`;
+    const eventSource = new EventSource(url);
     setLevels([]);
 
     eventSource.onerror = (event) => {
