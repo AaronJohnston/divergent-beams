@@ -94,7 +94,7 @@ button:hover {
 .PromptInput-menu {
   display: flex;
   flex-direction: column;
-  width: 200px;
+  width: 250px;
   background-color: var(--primary);
   color: var(--light-text);
   padding: 15px;

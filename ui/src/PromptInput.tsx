@@ -12,7 +12,7 @@ function PromptInput({
   const [prompt, setPrompt] = useState(
     "What is the closest star to the Earth?"
   );
-  const [embedPrune, setEmbedPrune] = useState(false);
+  const [embedPrune, setEmbedPrune] = useState(true);
   const [maxBeams, setMaxBeams] = useState(5);
   const [maxNewTokens, setMaxNewTokens] = useState(50);
   const [topP, setTopP] = useState(0.9);
