@@ -8,15 +8,20 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
   const rendered = useMemo(() => {
     return (
       <div className="GenLevel">
-        {level.nodes.map((node, idx) => {
-          return (
-            <GenNode
-              key={idx}
-              node={node}
-              ref={(elem: HTMLElement) => (nodesRef.current[idx] = elem)}
-            />
-          );
-        })}
+        <div className={`GenLevel-label ${level.level_type}`}>
+          {level.level_type}
+        </div>
+        <div className="GenLevel-nodes">
+          {level.nodes.map((node, idx) => {
+            return (
+              <GenNode
+                key={idx}
+                node={node}
+                ref={(elem: HTMLElement) => (nodesRef.current[idx] = elem)}
+              />
+            );
+          })}
+        </div>
       </div>
     );
   }, [level]);
@@ -27,23 +32,25 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
 
   useEffect(() => {
     if (nodesRef.current) {
-      console.log("LEVEL EFFECT 2", level);
       for (let i = 0; i < level.nodes.length; i++) {
         const current = nodesRef.current[i];
         const node = level.nodes[i];
         if (
           current.parentElement &&
-          current.parentElement.previousElementSibling &&
+          current.parentElement.parentElement &&
+          current.parentElement.parentElement.previousElementSibling &&
           node.parent !== undefined
         ) {
           const parentElement =
-            current.parentElement.previousElementSibling.children[node.parent];
+            current.parentElement.parentElement.previousElementSibling
+              .children[1].children[node.parent];
           drawEdge(parentElement, current);
 
-          if (node.aunts) {
+          if (node.aunts !== undefined) {
             for (const aunt of node.aunts) {
               const auntElement =
-                current.parentElement.previousElementSibling.children[aunt];
+                current.parentElement.parentElement.previousElementSibling
+                  .children[1].children[aunt];
               drawEdge(auntElement, current);
             }
           }

@@ -19,7 +19,10 @@ export default function GenTree({
         </div>
       )}
       <div className="GenLevel">
-        <div className="GenTree-prompt">PROMPT</div>
+        <div className="GenLevel-label">PROMPT</div>
+        <div className="GenLevel-nodes">
+          <div className="GenTree-prompt">PROMPT</div>
+        </div>
       </div>
       {levels.map((level) => (
         <GenLevel key={level.id} level={level} />

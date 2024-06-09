@@ -172,6 +172,17 @@ button:hover {
 .GenLevel {
   display: flex;
   flex-direction: column;
+  justify-content: stretch;
+}
+
+.GenLevel-label {
+  height: 8px;
+  background-color: var(--accent);
+}
+
+.GenLevel-nodes {
+  display: flex;
+  flex-direction: column;
   justify-content: space-around;
   margin-right: 8px;
 }

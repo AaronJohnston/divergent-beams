@@ -17,7 +17,6 @@ function App() {
   const cancelGeneration = () => {
     if (eventSource) {
       eventSource.close();
-      setEventSource(() => null);
     }
   };
 
@@ -29,15 +28,14 @@ function App() {
     setLevels([]);
 
     eventSource.onerror = (event) => {
-      console.error("EventSource failed:", event);
-      cancelGeneration();
-      console.log(eventSource);
+      console.error("EventSource error:", event);
+      eventSource.close();
     };
 
     eventSource.onmessage = (event) => {
       if (event.lastEventId === "END") {
         console.log("CLOSING EVENT SOURCE");
-        cancelGeneration();
+        eventSource.close();
         return;
       }
       const data: LevelSpec = JSON.parse(event.data);
