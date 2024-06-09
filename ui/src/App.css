@@ -1,5 +1,5 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Space Mono", monospace;
   line-height: 1.5;
   font-weight: 400;
 
@@ -116,6 +116,7 @@ p {
   color: var(--light-text);
   font-size: 1rem;
   padding: 5px;
+  font-family: "Space Mono", monospace;
 }
 
 .PromptInput-submit:hover {
@@ -140,6 +141,7 @@ p {
   flex-direction: row;
   align-items: center;
   color: var(--light-text);
+  margin-right: 20px;
 }
 
 .GenLevel {
