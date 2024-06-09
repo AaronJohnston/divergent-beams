@@ -14,6 +14,7 @@ export type NodeSpec = {
 
 export type PromptOptions = {
   prompt: string;
-  maxBeams: number;
   topP: number;
+  maxBeams: number;
+  maxNewTokens: number;
 };

@@ -14,6 +14,7 @@ function PromptInput({
   );
   const [embedPrune, setEmbedPrune] = useState(false);
   const [maxBeams, setMaxBeams] = useState(5);
+  const [maxNewTokens, setMaxNewTokens] = useState(50);
   const [topP, setTopP] = useState(0.9);
 
   return (
@@ -34,7 +35,7 @@ function PromptInput({
             onColor="#7fd293"
             offColor="#aaa"
           ></Switch>
-          PRUNE
+          PRUNE STEP
         </label>
         <label className="PromptInput-label">
           <input
@@ -51,13 +52,25 @@ function PromptInput({
             className="PromptInput-number"
             type="number"
             value={maxBeams}
-            onChange={(e) => setMaxBeams(parseFloat(e.target.value))}
+            onChange={(e) => setMaxBeams(parseInt(e.target.value))}
           ></input>
           MAX BEAMS
         </label>
+        <label className="PromptInput-label">
+          <input
+            className="PromptInput-number"
+            type="number"
+            value={maxNewTokens}
+            step={5}
+            onChange={(e) => setMaxNewTokens(parseInt(e.target.value))}
+          ></input>
+          MAX NEW TOKENS
+        </label>
         <button
           className="PromptInput-submit"
-          onClick={() => evaluatePrompt({ prompt, maxBeams, topP })}
+          onClick={() =>
+            evaluatePrompt({ prompt, topP, maxBeams, maxNewTokens })
+          }
         >
           EVALUATE
         </button>
