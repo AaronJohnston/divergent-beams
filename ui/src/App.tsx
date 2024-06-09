@@ -15,7 +15,7 @@ function App() {
   const cancelGeneration = () => {
     if (eventSource) {
       eventSource.close();
-      setEventSource(null);
+      setEventSource(() => null);
     }
   };
 
@@ -28,6 +28,7 @@ function App() {
     eventSource.onerror = (event) => {
       console.error("EventSource failed:", event);
       cancelGeneration();
+      console.log(eventSource);
     };
 
     eventSource.addEventListener("level", (event) => {
@@ -52,7 +53,7 @@ function App() {
         <PromptInput evaluatePrompt={evaluatePrompt}></PromptInput>
         <GenTree
           levels={levels}
-          isGenerating={!!eventSource}
+          isGenerating={!!eventSource && eventSource.readyState === 1}
           cancelGeneration={cancelGeneration}
         ></GenTree>
         <Generations></Generations>
