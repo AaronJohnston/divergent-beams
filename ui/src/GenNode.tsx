@@ -19,5 +19,5 @@ const GenNode = forwardRef<HTMLDivElement, { node: NodeSpec }>(function GenNode(
 export default GenNode;
 
 function getNodeColor(node: NodeSpec) {
-  return `rgba(232, 141, 103, ${(node.prob + 10) / 10})`;
+  return `rgba(247, 151, 141, ${node.prob * 0.8 + 0.2})`;
 }
