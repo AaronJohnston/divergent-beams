@@ -35,11 +35,11 @@ class InferenceTensor:
         self.prune_similar_branches = True # UNIMPLEMENTED
         self.prune_similar_embeddings = True # UNIMPLEMENTED
 
-    def candidates_generator(self, text: str):
-        print(text)
-        candidates, candidate_logprobs = self._init_candidates(text)
+    def candidates_generator(self, top_p: float, max_beams: int, prompt: str):
+        print(prompt)
+        candidates, candidate_logprobs = self._init_candidates(prompt)
         for level_idx in range(self.max_new_tokens):
-            candidates, candidate_parents, candidate_logprobs = self._infer(candidates[:self.max_candidates, ...], candidate_logprobs[:self.max_candidates, ...])
+            candidates, candidate_parents, candidate_logprobs = self._infer(candidates[:self.max_candidates, ...], candidate_logprobs[:self.max_candidates, ...], top_p)
             candidate_texts = self.tokenizer.batch_decode(candidates[:, -1])
             candidate_dicts = []
             for i in range(len(candidate_texts)):
@@ -49,9 +49,9 @@ class InferenceTensor:
 
         yield f"event: level\nid: END\ndata: []\n\n"
 
-    def _init_candidates(self, text: str):
-        prompt = "<|user|>\n{} <|end|>\n<|assistant|>".format(text)
-        inputs = self.tokenizer(prompt, return_tensors='pt')
+    def _init_candidates(self, prompt: str):
+        formatted_prompt = "<|user|>\n{} <|end|>\n<|assistant|>".format(prompt)
+        inputs = self.tokenizer(formatted_prompt, return_tensors='pt')
         print(self.tokenizer.batch_decode(inputs.input_ids))
 
         candidates = inputs.input_ids.to(self.device)
@@ -59,7 +59,7 @@ class InferenceTensor:
 
         return candidates, candidate_logprobs
 
-    def _top_p_single_batch(self, logits, candidates, candidate_logprobs):
+    def _top_p_single_batch(self, logits, candidates, candidate_logprobs, top_p):
         last_tok_logits = logits[:, -1, :]
         
         sorted_logits, sorted_indices = torch.sort(last_tok_logits, descending=True, dim=-1)
@@ -67,7 +67,7 @@ class InferenceTensor:
         cum_probs = torch.cumsum(sorted_probs, dim=-1)
         
         # Create tensor of bools indicating which indices are cumulatively less than top_p
-        keep_indices = cum_probs < 0.96
+        keep_indices = cum_probs < top_p
 
         # Keep the last element that went over top_p
         keep_indices[:, 1:] = keep_indices[:, :-1].clone() # Is this inefficient?
@@ -89,7 +89,7 @@ class InferenceTensor:
         return new_candidates, new_candidate_parents, new_candidate_logprobs
         
 
-    def _infer(self, candidates, candidate_logprobs):
+    def _infer(self, candidates, candidate_logprobs, top_p):
         with torch.inference_mode():
             num_batches = (candidates.shape[0] + self.batch_size - 1) // self.batch_size  # Round up to nearest whole number of batches
             print('\nnum_batches', num_batches)
@@ -105,7 +105,7 @@ class InferenceTensor:
                 
                 # TODO: Pruning step based on K-Means Clustering of embeddings here
                 
-                new_batch_candidates, new_batch_candidate_parents, new_batch_candidate_logprobs = self._top_p_single_batch(batch_outputs.logits, batch_candidates, batch_candidate_logprobs)
+                new_batch_candidates, new_batch_candidate_parents, new_batch_candidate_logprobs = self._top_p_single_batch(batch_outputs.logits, batch_candidates, batch_candidate_logprobs, top_p)
                 new_candidates_list.append(new_batch_candidates)
                 new_candidate_parents_list.append(new_batch_candidate_parents)
                 new_candidate_logprobs_list.append(new_batch_candidate_logprobs)
