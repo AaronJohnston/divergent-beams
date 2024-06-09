@@ -10,8 +10,6 @@ export default function GenTree({
   isGenerating: boolean;
   cancelGeneration: () => void;
 }) {
-  console.log("RENDERING GENTREE", levels.toString());
-
   return (
     <div className="GenTree">
       {isGenerating && (

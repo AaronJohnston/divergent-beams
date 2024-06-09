@@ -3,8 +3,10 @@ import Switch from "react-switch";
 import { PromptOptions } from "./types";
 
 function PromptInput({
+  lastPromptOptions,
   evaluatePrompt,
 }: {
+  lastPromptOptions: PromptOptions | null;
   evaluatePrompt: (promptOptions: PromptOptions) => void;
 }) {
   const [prompt, setPrompt] = useState(
