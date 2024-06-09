@@ -9,7 +9,15 @@ const TREE_ENDPOINT =
   "http://ec2-52-89-34-232.us-west-2.compute.amazonaws.com/api/v1/tree";
 
 function App() {
+  const [eventSource, setEventSource] = useState<EventSource | null>(null);
   const [levels, setLevels] = useState<LevelSpec[]>([]);
+
+  const cancelGeneration = () => {
+    if (eventSource) {
+      eventSource.close();
+      setEventSource(null);
+    }
+  };
 
   const evaluatePrompt = (promptOptions: PromptOptions) => {
     console.log("OPENING EVENT SOURCE");
@@ -19,23 +27,20 @@ function App() {
 
     eventSource.onerror = (event) => {
       console.error("EventSource failed:", event);
-      eventSource.close();
+      cancelGeneration();
     };
 
     eventSource.addEventListener("level", (event) => {
       if (event.lastEventId === "END") {
         console.log("CLOSING EVENT SOURCE");
-        eventSource.close();
+        cancelGeneration();
         return;
       }
       const data: LevelSpec = JSON.parse(event.data);
       setLevels((levels: LevelSpec[]) => [...levels, data]);
     });
 
-    return () => {
-      console.log("CLEANING UP EVENT SOURCE");
-      eventSource.close();
-    };
+    setEventSource(eventSource);
   };
 
   return (
@@ -45,7 +50,11 @@ function App() {
       </header>
       <div className="App-content">
         <PromptInput evaluatePrompt={evaluatePrompt}></PromptInput>
-        <GenTree levels={levels}></GenTree>
+        <GenTree
+          levels={levels}
+          isGenerating={!!eventSource}
+          cancelGeneration={cancelGeneration}
+        ></GenTree>
         <Generations></Generations>
       </div>
     </div>

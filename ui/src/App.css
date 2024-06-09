@@ -34,6 +34,10 @@ p {
   padding: 0;
 }
 
+button:hover {
+  cursor: pointer;
+}
+
 .App-root {
   display: flex;
   flex-direction: column;
@@ -127,11 +131,8 @@ p {
   font-family: "Space Mono", monospace;
 }
 
-.PromptInput-submit:hover {
-  cursor: pointer;
-}
-
 .GenTree {
+  position: relative;
   display: flex;
   flex-direction: row;
   height: 100%;
@@ -150,6 +151,22 @@ p {
   align-items: center;
   color: var(--light-text);
   margin-right: 20px;
+}
+
+.GenTree-generatingMenu {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+
+.GenTree-generatingMenu button {
+  background-color: var(--accent);
+  border: none;
+  color: var(--light-text);
+  font-size: 1rem;
+  padding: 0 5px;
+  margin-left: 10px;
+  font-family: "Space Mono", monospace;
 }
 
 .GenLevel {
