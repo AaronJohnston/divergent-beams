@@ -6,14 +6,14 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
   const nodesRef = useRef<HTMLElement[]>([]);
 
   useEffect(() => {
-    nodesRef.current = nodesRef.current.slice(0, level.length); // Make elements set by child renders visible as part of array
+    nodesRef.current = nodesRef.current.slice(0, level.nodes.length); // Make elements set by child renders visible as part of array
   }, [level]);
 
   useEffect(() => {
     if (nodesRef.current) {
-      for (let i = 0; i < level.length; i++) {
+      for (let i = 0; i < level.nodes.length; i++) {
         const current = nodesRef.current[i];
-        const node = level[i];
+        const node = level.nodes[i];
         if (
           current.parentElement &&
           current.parentElement.previousElementSibling &&
@@ -29,7 +29,7 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
 
   return (
     <div className="GenLevel">
-      {level.map((node, idx) => {
+      {level.nodes.map((node, idx) => {
         return (
           <GenNode
             key={idx}

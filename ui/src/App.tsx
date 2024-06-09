@@ -34,7 +34,7 @@ function App() {
       console.log(eventSource);
     };
 
-    eventSource.addEventListener("level", (event) => {
+    eventSource.onmessage = (event) => {
       if (event.lastEventId === "END") {
         console.log("CLOSING EVENT SOURCE");
         cancelGeneration();
@@ -42,7 +42,7 @@ function App() {
       }
       const data: LevelSpec = JSON.parse(event.data);
       setLevels((levels: LevelSpec[]) => [...levels, data]);
-    });
+    };
 
     setEventSource(eventSource);
   };
@@ -50,7 +50,7 @@ function App() {
   return (
     <div className="App-root">
       <header className="App-header">
-        <h1>Disparate Beams</h1>
+        <h1>Divergent Beams</h1>
       </header>
       <div className="App-content">
         <PromptInput

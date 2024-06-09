@@ -47,7 +47,7 @@ class InferenceTensor:
         print(prompt)
         candidates, candidate_logprobs = self._init_candidates(prompt)
         for level_idx in range(self.max_new_tokens):
-            logits, embeddings = self._infer(candidates[:self.max_candidates, ...], candidate_logprobs[:self.max_candidates, ...])
+            logits, embeddings = self._infer(candidates, candidate_logprobs)
         
             if candidates.shape[0] > max_beams:
                 candidates, candidate_parents, candidate_logprobs, logits = self._k_means(logits, embeddings, candidates, candidate_logprobs, max_beams)
