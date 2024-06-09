@@ -93,9 +93,9 @@ function drawEdge(parent: Element, child: Element) {
 
   svg.appendChild(line);
 
-  if (child.lastElementChild && child.lastElementChild.tagName === "svg") {
-    child.lastElementChild.remove();
-  }
+  // if (child.lastElementChild && child.lastElementChild.tagName === "svg") {
+  //   child.lastElementChild.remove();
+  // }
 
   child.appendChild(svg);
 }

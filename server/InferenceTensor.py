@@ -50,24 +50,35 @@ class InferenceTensor:
             logits, embeddings = self._infer(candidates, candidate_logprobs)
         
             if candidates.shape[0] > max_beams:
-                candidates, candidate_parents, candidate_logprobs, logits = self._k_means(logits, embeddings, candidates, candidate_logprobs, max_beams)
-                yield self._format_candidates('k_means', f"{level_idx}-k", candidates, candidate_parents, candidate_logprobs)
+                candidates, candidate_parents, candidate_aunts, candidate_logprobs, logits = self._k_means(logits, embeddings, candidates, candidate_logprobs, max_beams)
+                yield self._format_k_means(level_idx, candidates, candidate_parents, candidate_aunts, candidate_logprobs)
 
             candidates, candidate_parents, candidate_logprobs = self._top_p(logits, candidates, candidate_logprobs, top_p)
-            yield self._format_candidates('top_p', f"{level_idx}-p", candidates, candidate_parents, candidate_logprobs)
+            yield self._format_top_p(level_idx, candidates, candidate_parents, candidate_logprobs)
 
         yield f"event: level\nid: END\ndata: []\n\n"
 
-    def _format_candidates(self, level_type: str, idx: int, candidates, candidate_parents, candidate_logprobs):
-        D(candidate_parents, 'candidate_parents')
+    def _format_k_means(self, level_idx, candidates, candidate_parents, candidate_aunts, candidate_logprobs):
         candidate_texts = self.tokenizer.batch_decode(candidates[:, -1])
         candidate_probs = candidate_logprobs.exp()
         candidate_dicts = []
+        idx = f"{level_idx}-k"
         for i in range(len(candidate_texts)):
-            candidate_dicts.append({'content': candidate_texts[i], 'parents': candidate_parents[i], 'prob': candidate_probs[i].item()})
-        data = json.dumps({'id': idx, 'level_type': level_type, 'nodes': candidate_dicts})
+            candidate_dicts.append({'content': candidate_texts[i], 'parent': candidate_parents[i], 'aunts': candidate_aunts[i], 'prob': candidate_probs[i].item()})
+        data = json.dumps({'id': idx, 'level_type': 'k_means', 'nodes': candidate_dicts})
+        return f"event: message\nid: {idx}\"\ndata: {data}\n\n"
+
+    def _format_top_p(self, level_idx, candidates, candidate_parents, candidate_logprobs):
+        candidate_texts = self.tokenizer.batch_decode(candidates[:, -1])
+        candidate_probs = candidate_logprobs.exp()
+        candidate_dicts = []
+        idx = f"{level_idx}-p"
+        for i in range(len(candidate_texts)):
+            candidate_dicts.append({'content': candidate_texts[i], 'parent': candidate_parents[i], 'prob': candidate_probs[i].item()})
+        data = json.dumps({'id': idx, 'level_type': 'top_p', 'nodes': candidate_dicts})
         return f"event: message\nid: {idx}\ndata: {data}\n\n"
-        
+
+
     def _init_candidates(self, text: str):
         prompt = "<|user|>\n{} <|end|>\n<|assistant|>".format(text)
         inputs = self.tokenizer(prompt, return_tensors='pt')
@@ -99,13 +110,15 @@ class InferenceTensor:
         closest_indices = torch.from_numpy(closest).to(self.device)
         new_candidates = candidates.index_select(0, closest_indices)
         D(new_candidates, 'new_candidates')
-        new_candidate_parents = [torch.nonzero(torch.from_numpy(k_mean_clusters).to(self.device) == i).squeeze(-1).tolist() for i in range(new_candidates.shape[0])]
+        new_candidate_parents = closest_indices.tolist()
         D(new_candidate_parents, 'new_candidate_parents')
+        new_candidate_aunts = [torch.nonzero(torch.from_numpy(k_mean_clusters).to(self.device) == i).squeeze(-1).tolist() for i in range(new_candidates.shape[0])]
+        D(new_candidate_aunts, 'new_candidate_aunts')
         new_candidate_logprobs = torch.from_numpy(k_mean_logprob_mass).to(self.device)
         D(new_candidate_logprobs, 'new_candidate_logprobs')
         new_candidate_logits = logits.index_select(0, closest_indices)
         
-        return new_candidates, new_candidate_parents, new_candidate_logprobs, new_candidate_logits
+        return new_candidates, new_candidate_parents, new_candidate_aunts, new_candidate_logprobs, new_candidate_logits
         
     def _top_p(self, logits, candidates, candidate_logprobs, top_p):
         D(candidates, 'candidates')
