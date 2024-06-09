@@ -29,13 +29,13 @@ function PromptInput({
             onColor="#7fd293"
             offColor="#aaa"
           ></Switch>
-          Embed Prune
+          PRUNE
         </label>
         <button
           className="PromptInput-submit"
           onClick={() => evaluatePrompt(currPrompt)}
         >
-          Evaluate
+          EVALUATE
         </button>
       </div>
     </div>

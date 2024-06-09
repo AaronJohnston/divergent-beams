@@ -1,5 +1,5 @@
 function Generations() {
-  return <div></div>;
+  return <div className="Generations"></div>;
 }
 
 export default Generations;

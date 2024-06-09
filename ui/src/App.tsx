@@ -11,7 +11,7 @@ const TREE_ENDPOINT =
 function App() {
   const [levels, setLevels] = useState<LevelSpec[]>([]);
 
-  const evaluatePrompt = () => {
+  const evaluatePrompt = (prompt: string) => {
     console.log("OPENING EVENT SOURCE");
     const eventSource = new EventSource(TREE_ENDPOINT + "?prompt=" + prompt);
     setLevels([]);
@@ -27,7 +27,6 @@ function App() {
         eventSource.close();
         return;
       }
-      console.log(event);
       const data: LevelSpec = JSON.parse(event.data);
       setLevels((levels: LevelSpec[]) => [...levels, data]);
     });
@@ -43,9 +42,11 @@ function App() {
       <header className="App-header">
         <h1>LLM Output Space</h1>
       </header>
-      <PromptInput evaluatePrompt={evaluatePrompt}></PromptInput>
-      <GenTree levels={levels}></GenTree>
-      <Generations></Generations>
+      <div className="App-content">
+        <PromptInput evaluatePrompt={evaluatePrompt}></PromptInput>
+        <GenTree levels={levels}></GenTree>
+        <Generations></Generations>
+      </div>
     </div>
   );
 }
