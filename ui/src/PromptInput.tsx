@@ -4,18 +4,20 @@ import Switch from "react-switch";
 function PromptInput({
   evaluatePrompt,
 }: {
-  evaluatePrompt: (prompt: string) => void;
+  evaluatePrompt: (promptOptions: PromptOptions) => void;
 }) {
-  const [currPrompt, setCurrPrompt] = useState(
+  const [prompt, setPrompt] = useState(
     "What is the closest star to the Earth?"
   );
   const [embedPrune, setEmbedPrune] = useState(false);
+  const [maxBeams, setMaxBeams] = useState(5);
+  const [topP, setTopP] = useState(0.9);
 
   return (
     <div className="PromptInput">
       <textarea
-        value={currPrompt}
-        onChange={(event) => setCurrPrompt(event.target.value)}
+        value={prompt}
+        onChange={(event) => setPrompt(event.target.value)}
         // onBlur={() => evaluatePrompt(currPrompt)}
       ></textarea>
       <div className="PromptInput-menu">
@@ -31,9 +33,28 @@ function PromptInput({
           ></Switch>
           PRUNE
         </label>
+        <label className="PromptInput-label">
+          <input
+            className="PromptInput-number"
+            type="number"
+            value={maxBeams}
+            onChange={(e) => setMaxBeams(parseFloat(e.target.value))}
+          ></input>
+          MAX BEAMS
+        </label>
+        <label className="PromptInput-label">
+          <input
+            className="PromptInput-number"
+            type="number"
+            value={topP}
+            step={0.01}
+            onChange={(e) => setTopP(parseFloat(e.target.value))}
+          ></input>
+          TOP-P
+        </label>
         <button
           className="PromptInput-submit"
-          onClick={() => evaluatePrompt(currPrompt)}
+          onClick={() => evaluatePrompt({ prompt, maxBeams, topP })}
         >
           EVALUATE
         </button>

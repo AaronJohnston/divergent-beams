@@ -102,6 +102,13 @@ p {
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
+  margin: 5px 0;
+}
+
+.PromptInput-number {
+  width: 50px;
+  margin-right: 10px;
+  font-family: "Space Mono", monospace;
 }
 
 .PromptInput-switch {

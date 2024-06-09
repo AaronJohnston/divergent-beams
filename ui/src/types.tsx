@@ -6,3 +6,9 @@ export type NodeSpec = {
   parent?: number;
   status?: string[];
 };
+
+export type PromptOptions = {
+  prompt: string;
+  maxBeams: number;
+  topP: number;
+};
