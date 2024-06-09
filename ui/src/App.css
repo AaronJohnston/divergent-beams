@@ -1,3 +1,38 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --color-bg: #fdf9ec;
+  --color-primary: #006989;
+  --color-secondary: #005c78;
+  --color-accent: #e88d67;
+  --color-text-dark: #333;
+  --color-text-light: var(--color-bg);
+
+  color-scheme: light dark;
+  color: var(--color-primary);
+  background-color: var(--color-bg);
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+}
+
+p {
+  margin: 0;
+  padding: 0;
+}
+
 .App-root {
   display: flex;
   flex-direction: column;
@@ -19,4 +54,80 @@
 
 .App-header h1 {
   font-size: 1.5rem;
+}
+
+.GenTree {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  overflow-x: scroll;
+}
+
+.GenPromptLevel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  margin: 0 16px 0 32px;
+}
+
+.GenPrompt {
+  min-width: 12rem;
+  min-height: 5rem;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-secondary);
+  color: var(--color-text-light);
+}
+
+.GenPromptTokens {
+  padding: 16px 8px;
+  background-color: var(--color-secondary);
+  min-width: 12rem;
+  min-height: 5rem;
+  border: none;
+}
+
+.GenPromptMenu {
+  background-color: var(--color-primary);
+  height: 1.8rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.GenPromptMenu p {
+  width: 100%;
+  font-size: 0.7rem;
+  opacity: 0.8;
+  margin: 4px 8px;
+  text-align: center;
+}
+
+.GenPromptMenu button {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 4px 8px;
+  background-color: var(--color-accent);
+  border: none;
+  cursor: pointer;
+}
+
+.GenLevel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  margin-right: 8px;
+}
+
+.GenNode {
+  position: relative;
+  text-align: left;
+  padding: 0 3px;
+  height: 1.5rem;
+  width: fit-content;
+  min-width: 10px;
+  align-items: flex-start;
+  color: var(--color-text-dark);
 }

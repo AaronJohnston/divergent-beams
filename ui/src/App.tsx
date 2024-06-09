@@ -8,8 +8,9 @@ function App() {
   return (
     <div className="App-root">
       <header className="App-header">
-        <h1>Tree</h1>
+        <h1>LLM Output Space</h1>
       </header>
+      <PromptInput prompt={prompt} setPrompt={setPrompt}></PromptInput>
       <GenTree prompt={prompt} setPrompt={setPrompt}></GenTree>
     </div>
   );

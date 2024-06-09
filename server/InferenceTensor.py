@@ -38,12 +38,14 @@ class InferenceTensor:
     def candidates_generator(self, text: str):
         print(text)
         candidates, candidate_logprobs = self._init_candidates(text)
-        for i in range(self.max_new_tokens):
+        for level_idx in range(self.max_new_tokens):
             candidates, candidate_parents, candidate_logprobs = self._infer(candidates[:self.max_candidates, ...], candidate_logprobs[:self.max_candidates, ...])
             candidate_texts = self.tokenizer.batch_decode(candidates[:, -1])
-            candidate_dicts = list(map(lambda text, parent, logprob: {'content': text, 'parent': parent, 'prob': logprob}, zip(candidate_texts, candidate_parents, candidate_logprobs)))
+            candidate_dicts = []
+            for i in range(len(candidate_texts)):
+                candidate_dicts.append({'content': candidate_texts[i], 'parent': candidate_parents[i].item(), 'prob': candidate_logprobs[i].item()})
             data = json.dumps(candidate_dicts)
-            yield f"event: level\nid: {i}\ndata: {data}\n\n"
+            yield f"event: level\nid: {level_idx}\ndata: {data}\n\n"
 
         yield f"event: level\nid: END\ndata: []\n\n"
 
