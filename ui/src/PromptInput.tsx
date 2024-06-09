@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Switch from "react-switch";
+import { PromptOptions } from "./types";
 
 function PromptInput({
   evaluatePrompt,
@@ -37,20 +38,20 @@ function PromptInput({
           <input
             className="PromptInput-number"
             type="number"
-            value={maxBeams}
-            onChange={(e) => setMaxBeams(parseFloat(e.target.value))}
-          ></input>
-          MAX BEAMS
-        </label>
-        <label className="PromptInput-label">
-          <input
-            className="PromptInput-number"
-            type="number"
             value={topP}
             step={0.01}
             onChange={(e) => setTopP(parseFloat(e.target.value))}
           ></input>
           TOP-P
+        </label>
+        <label className="PromptInput-label">
+          <input
+            className="PromptInput-number"
+            type="number"
+            value={maxBeams}
+            onChange={(e) => setMaxBeams(parseFloat(e.target.value))}
+          ></input>
+          MAX BEAMS
         </label>
         <button
           className="PromptInput-submit"

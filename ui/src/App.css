@@ -82,7 +82,8 @@ p {
   flex-grow: 1;
   font-size: 1rem;
   padding: 15px;
-  height: 5.5rem;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 .PromptInput-menu {
