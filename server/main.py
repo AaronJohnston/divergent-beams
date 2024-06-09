@@ -1,3 +1,5 @@
+print('Starting up server...')
+
 from asyncio import sleep
 import json
 from Inference import Inference
@@ -8,6 +10,8 @@ from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from InferenceTensor import InferenceTensor
+
+print('Resolved imports, initializing modules...')
 
 app = FastAPI()
 env = Environment()

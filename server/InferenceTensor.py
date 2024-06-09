@@ -26,6 +26,7 @@ def display(*args):
 
 class InferenceTensor:
     def __init__(self):
+        print('Initializing model...')
         self.model = AutoModelForCausalLM.from_pretrained(
             "microsoft/Phi-3-mini-4k-instruct",
             torch_dtype=torch.bfloat16,
@@ -34,6 +35,7 @@ class InferenceTensor:
             use_cache=True,
             # attn_implementation='flash_attention_2',
         )
+        print('Initializing tokenizer...')
         self.tokenizer = AutoTokenizer.from_pretrained(
             "microsoft/Phi-3-mini-4k-instruct")
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -56,15 +58,15 @@ class InferenceTensor:
 
         yield f"event: level\nid: END\ndata: []\n\n"
 
-    def _format_candidates(self, event: str, idx: int, candidates, candidate_parents, candidate_logprobs):
+    def _format_candidates(self, level_type: str, idx: int, candidates, candidate_parents, candidate_logprobs):
         D(candidate_parents, 'candidate_parents')
         candidate_texts = self.tokenizer.batch_decode(candidates[:, -1])
         candidate_probs = candidate_logprobs.exp()
         candidate_dicts = []
         for i in range(len(candidate_texts)):
             candidate_dicts.append({'content': candidate_texts[i], 'parents': candidate_parents[i], 'prob': candidate_probs[i].item()})
-        data = json.dumps(candidate_dicts)
-        return f"event: {event}\nid: {idx}\ndata: {data}\n\n"
+        data = json.dumps({'level_type': level_type, 'nodes': candidate_dicts})
+        return f"event: message\nid: {idx}\ndata: {data}\n\n"
         
     def _init_candidates(self, text: str):
         prompt = "<|user|>\n{} <|end|>\n<|assistant|>".format(text)
