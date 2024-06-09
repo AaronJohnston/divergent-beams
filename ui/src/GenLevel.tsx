@@ -34,12 +34,18 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
         if (
           current.parentElement &&
           current.parentElement.previousElementSibling &&
-          node.parents !== undefined
+          node.parent !== undefined
         ) {
-          for (const nodeParent of node.parents) {
-            const parentElement =
-              current.parentElement.previousElementSibling.children[nodeParent];
-            drawEdge(parentElement, current);
+          const parentElement =
+            current.parentElement.previousElementSibling.children[node.parent];
+          drawEdge(parentElement, current);
+
+          if (node.aunts) {
+            for (const aunt of node.aunts) {
+              const auntElement =
+                current.parentElement.previousElementSibling.children[aunt];
+              drawEdge(auntElement, current);
+            }
           }
         }
       }
