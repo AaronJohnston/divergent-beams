@@ -56,7 +56,7 @@ class InferenceTensor:
             candidates, candidate_parents, candidate_logprobs = self._top_p(logits, candidates, candidate_logprobs, top_p)
             yield self._format_top_p(level_idx, candidates, candidate_parents, candidate_logprobs)
 
-        yield f"event: level\nid: END\ndata: []\n\n"
+        yield f"event: message\nid: END\ndata: []\n\n"
 
     def _format_k_means(self, level_idx, candidates, candidate_parents, candidate_aunts, candidate_logprobs):
         candidate_texts = self.tokenizer.batch_decode(candidates[:, -1])
