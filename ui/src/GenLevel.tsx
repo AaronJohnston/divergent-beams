@@ -4,11 +4,8 @@ import { LevelSpec } from "./types";
 
 export default function GenLevel({ level }: { level: LevelSpec }) {
   const nodesRef = useRef<HTMLElement[]>([]);
-  console.log("TRYING LEVEL", level);
 
   const rendered = useMemo(() => {
-    console.log("RENDERING LEVEL", level);
-
     return (
       <div className="GenLevel">
         {level.nodes.map((node, idx) => {
@@ -25,12 +22,10 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
   }, [level]);
 
   useEffect(() => {
-    console.log("LEVEL EFFECT 1", level);
     nodesRef.current = nodesRef.current.slice(0, level.nodes.length); // Make elements set by child renders visible as part of array
-  }, [rendered]);
+  }, [level, rendered]);
 
   useEffect(() => {
-    console.log("LEVEL EFFECT 2 (not yet current)", level);
     if (nodesRef.current) {
       console.log("LEVEL EFFECT 2", level);
       for (let i = 0; i < level.nodes.length; i++) {
@@ -49,7 +44,9 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
         }
       }
     }
-  }, [rendered]);
+  }, [level, rendered]);
+
+  return rendered;
 }
 
 function drawEdge(parent: Element, child: Element) {
