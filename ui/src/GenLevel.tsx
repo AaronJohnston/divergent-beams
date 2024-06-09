@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import GenNode from "./GenNode";
 import { LevelSpec } from "./types";
 
@@ -20,9 +20,10 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
           node.parents !== undefined
         ) {
           for (const nodeParent of node.parents) {
-          const parentElement =
-            current.parentElement.previousElementSibling.children[nodeParent];
-          drawEdge(parentElement, current);
+            const parentElement =
+              current.parentElement.previousElementSibling.children[nodeParent];
+            drawEdge(parentElement, current);
+          }
         }
       }
     }

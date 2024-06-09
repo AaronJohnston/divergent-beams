@@ -5,6 +5,7 @@ const GenNode = forwardRef<HTMLDivElement, { node: NodeSpec }>(function GenNode(
   { node }: { node: NodeSpec },
   ref
 ) {
+  console.log("RENDERING NODE", node);
   return (
     <div
       className="GenNode"

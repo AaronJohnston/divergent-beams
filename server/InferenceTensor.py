@@ -65,7 +65,7 @@ class InferenceTensor:
         candidate_dicts = []
         for i in range(len(candidate_texts)):
             candidate_dicts.append({'content': candidate_texts[i], 'parents': candidate_parents[i], 'prob': candidate_probs[i].item()})
-        data = json.dumps({'level_type': level_type, 'nodes': candidate_dicts})
+        data = json.dumps({'id': idx, 'level_type': level_type, 'nodes': candidate_dicts})
         return f"event: message\nid: {idx}\ndata: {data}\n\n"
         
     def _init_candidates(self, text: str):
