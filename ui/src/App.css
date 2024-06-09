@@ -152,6 +152,8 @@ button:hover {
   align-items: center;
   color: var(--light-text);
   margin-right: 20px;
+  position: relative;
+  top: calc(calc(40px - 1.5rem) / -2);
 }
 
 .GenTree-generatingMenu {
@@ -174,7 +176,7 @@ button:hover {
   display: flex;
   flex-direction: column;
   justify-content: stretch;
-  margin-right: 8px;
+  margin-right: 12px;
 }
 
 .GenLevel-label {
@@ -188,7 +190,7 @@ button:hover {
 
 .GenLevel-label.k_means {
   background-color: var(--class-a);
-  padding-right: 30px;
+  padding-right: 40px;
 }
 
 .GenLevel-label.top_p {
@@ -199,6 +201,7 @@ button:hover {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  align-items: flex-end;
 }
 
 .GenNode {
@@ -210,6 +213,7 @@ button:hover {
   min-width: 10px;
   align-items: flex-start;
   color: var(--color-text-dark);
+  margin-bottom: 3px;
 }
 
 .Generations {

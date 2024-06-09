@@ -44,14 +44,19 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
           const parentElement =
             current.parentElement.parentElement.previousElementSibling
               .children[1].children[node.parent];
-          drawEdge(parentElement, current);
+          drawEdge(
+            parentElement,
+            current,
+            "#354955",
+            level.level_type === "k_means" ? "4 4" : ""
+          );
 
           if (node.aunts !== undefined) {
             for (const aunt of node.aunts) {
               const auntElement =
                 current.parentElement.parentElement.previousElementSibling
                   .children[1].children[aunt];
-              drawEdge(auntElement, current, "#35495522");
+              drawEdge(auntElement, current, "#35495522", "4 4");
             }
           }
         }
@@ -62,7 +67,12 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
   return rendered;
 }
 
-function drawEdge(parent: Element, child: Element, color = "#354955") {
+function drawEdge(
+  parent: Element,
+  child: Element,
+  color = "#354955",
+  dashArray = ""
+) {
   const parentRect = parent.getBoundingClientRect();
   const childRect = child.getBoundingClientRect();
 
@@ -103,6 +113,9 @@ function drawEdge(parent: Element, child: Element, color = "#354955") {
   line.setAttribute("y2", (linePoint2Y + strokeWidth).toString());
   line.setAttribute("stroke", color);
   line.setAttribute("stroke-width", strokeWidth.toString());
+  if (dashArray !== "") {
+    line.setAttribute("stroke-dasharray", dashArray);
+  }
 
   svg.appendChild(line);
 
