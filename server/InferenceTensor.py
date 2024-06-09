@@ -40,13 +40,12 @@ class InferenceTensor:
             "microsoft/Phi-3-mini-4k-instruct")
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
-        self.max_new_tokens = 10
         self.batch_size = 8
         
-    def candidates_generator(self, top_p: float, max_beams: int, prompt: str):
+    def candidates_generator(self, top_p: float, max_beams: int, max_new_tokens: int, prompt: str):
         print(prompt)
         candidates, candidate_logprobs = self._init_candidates(prompt)
-        for level_idx in range(self.max_new_tokens):
+        for level_idx in range(max_new_tokens):
             logits, embeddings = self._infer(candidates, candidate_logprobs)
         
             if candidates.shape[0] > max_beams:
