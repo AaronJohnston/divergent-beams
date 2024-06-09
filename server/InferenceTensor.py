@@ -162,7 +162,7 @@ class InferenceTensor:
     def _infer(self, candidates, candidate_logprobs):
         with torch.inference_mode():
             num_batches = (candidates.shape[0] + self.batch_size - 1) // self.batch_size  # Round up to nearest whole number of batches
-            print('\nnum_batches', num_batches)
+            D(num_batches, 'num_batches')
 
             check_gpu('infer start')
             output_logits_list = []

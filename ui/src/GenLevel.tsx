@@ -17,11 +17,12 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
         if (
           current.parentElement &&
           current.parentElement.previousElementSibling &&
-          node.parent !== undefined
+          node.parents !== undefined
         ) {
-          const parent =
-            current.parentElement.previousElementSibling.children[node.parent];
-          drawEdge(parent, current);
+          for (const nodeParent of node.parents) {
+          const parentElement =
+            current.parentElement.previousElementSibling.children[nodeParent];
+          drawEdge(parentElement, current);
         }
       }
     }

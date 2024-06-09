@@ -6,7 +6,7 @@ export type LevelSpec = {
 export type NodeSpec = {
   content: string;
   prob: number;
-  parent?: number;
+  parents?: number[];
   status?: string[];
 };
 
