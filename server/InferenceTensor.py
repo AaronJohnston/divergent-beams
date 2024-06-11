@@ -43,7 +43,6 @@ class InferenceTensor:
         self.batch_size = 8
         
     def candidates_generator(self, top_p: float, top_k: float, max_beams: int, max_new_tokens: int, prompt: str):
-        print(prompt)
         candidates, candidate_logprobs = self._init_candidates(prompt)
         for level_idx in range(max_new_tokens):
             logits, embeddings = self._infer(candidates, candidate_logprobs)
@@ -82,7 +81,6 @@ class InferenceTensor:
         prompt = "<|user|>\n{} <|end|>\n<|assistant|>".format(text)
         inputs = self.tokenizer(prompt, return_tensors='pt')
         D(inputs.input_ids, 'input_ids')
-        print(self.tokenizer.batch_decode(inputs.input_ids))
 
         candidates = inputs.input_ids.to(self.device)
         candidate_logprobs = torch.zeros((1), dtype=torch.float32, device=self.device)
