@@ -63,7 +63,7 @@ function App() {
           }
           cancelGeneration={cancelGeneration}
         ></GenTree>
-        <Generations></Generations>
+        <Generations levels={levels}></Generations>
       </div>
     </div>
   );
