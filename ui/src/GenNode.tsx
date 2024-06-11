@@ -11,7 +11,7 @@ const GenNode = forwardRef<HTMLDivElement, { node: NodeSpec }>(function GenNode(
       ref={ref}
       style={{ backgroundColor: getNodeColor(node) }}
     >
-      {node.content.replace(/▁/g, "")}
+      {node.content.replace(/▁/g, "").replace(/\n/g, "\\n")}
     </div>
   );
 });
