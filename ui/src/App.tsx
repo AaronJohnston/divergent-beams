@@ -18,6 +18,7 @@ function App() {
     if (eventSource) {
       eventSource.close();
     }
+    setEventSource(() => null);
   };
 
   const evaluatePrompt = (promptOptions: PromptOptions) => {
@@ -57,7 +58,9 @@ function App() {
         ></PromptInput>
         <GenTree
           levels={levels}
-          isGenerating={!!eventSource && eventSource.readyState === 1}
+          isGenerating={
+            !!eventSource && eventSource.readyState === eventSource.OPEN
+          }
           cancelGeneration={cancelGeneration}
         ></GenTree>
         <Generations></Generations>
