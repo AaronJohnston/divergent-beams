@@ -4,9 +4,10 @@ import { LevelSpec } from "./types";
 
 export default function GenLevel({ level }: { level: LevelSpec }) {
   const nodesRef = useRef<HTMLElement[]>([]);
-  const totalProb = level.nodes.reduce((acc, node) => acc + node.prob, 0);
 
   const rendered = useMemo(() => {
+    const totalProb = level.nodes.reduce((acc, node) => acc + node.prob, 0);
+
     return (
       <div className="GenLevel">
         <div className={`GenLevel-label ${level.level_type}`}>
