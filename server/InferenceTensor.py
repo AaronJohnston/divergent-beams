@@ -42,7 +42,7 @@ class InferenceTensor:
 
         self.batch_size = 8
         
-    def candidates_generator(self, top_p: float, max_beams: int, max_new_tokens: int, prompt: str):
+    def candidates_generator(self, top_p: float, top_k: float, max_beams: int, max_new_tokens: int, prompt: str):
         print(prompt)
         candidates, candidate_logprobs = self._init_candidates(prompt)
         for level_idx in range(max_new_tokens):
@@ -52,7 +52,7 @@ class InferenceTensor:
                 candidates, candidate_parents, candidate_aunts, candidate_logprobs, logits = self._k_means(logits, embeddings, candidates, candidate_logprobs, max_beams)
                 yield self._format_k_means(level_idx, candidates, candidate_parents, candidate_aunts, candidate_logprobs)
 
-            candidates, candidate_parents, candidate_logprobs = self._top_p(logits, candidates, candidate_logprobs, top_p)
+            candidates, candidate_parents, candidate_logprobs = self._top_p(logits, candidates, candidate_logprobs, top_p, top_k)
             yield self._format_top_p(level_idx, candidates, candidate_parents, candidate_logprobs)
 
         yield f"event: message\nid: END\ndata: []\n\n"
@@ -119,7 +119,7 @@ class InferenceTensor:
         
         return new_candidates, new_candidate_parents, new_candidate_aunts, new_candidate_logprobs, new_candidate_logits
         
-    def _top_p(self, logits, candidates, candidate_logprobs, top_p):
+    def _top_p(self, logits, candidates, candidate_logprobs, top_p, top_k):
         D(candidates, 'candidates')
         D(candidate_logprobs, 'candidate_logprobs')
         
@@ -142,6 +142,10 @@ class InferenceTensor:
         keep_indices[:, 1:] = keep_indices[:, :-1].clone() # Is this inefficient?
         keep_indices[:, 0] = 1  # Always keep the first element
         D(keep_indices, 'keep_indices')
+
+        # Don't keep any indices that are greater than top_k
+        keep_indices[:, top_k:] = 0
+        D(keep_indices, 'keep_indices after top_k')
 
         new_candidate_parents = keep_indices.nonzero()[:, 0]
         D(new_candidate_parents, 'new_candidate_parents')
