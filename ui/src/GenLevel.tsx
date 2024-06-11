@@ -4,6 +4,7 @@ import { LevelSpec } from "./types";
 
 export default function GenLevel({ level }: { level: LevelSpec }) {
   const nodesRef = useRef<HTMLElement[]>([]);
+  const totalProb = level.nodes.reduce((acc, node) => acc + node.prob, 0);
 
   const rendered = useMemo(() => {
     return (
@@ -17,6 +18,7 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
               <GenNode
                 key={idx}
                 node={node}
+                totalProb={totalProb}
                 ref={(elem: HTMLElement) => (nodesRef.current[idx] = elem)}
               />
             );
