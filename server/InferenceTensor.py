@@ -100,7 +100,7 @@ class InferenceTensor:
         D(k_mean_space, 'k_mean_space')
         k_mean_clusters = k_means.predict(embeddings_np)
         D(k_mean_clusters, 'k_mean_clusters')
-        k_mean_logprob_mass = np.bincount(k_mean_clusters, weights=candidate_logprobs.cpu())
+        k_mean_logprob_mass = np.log(np.bincount(k_mean_clusters, weights=candidate_logprobs.cpu().exp()))
         D(k_mean_logprob_mass, 'k_mean_logprob_mass')
         closest = np.argmin(k_mean_space, axis=0)
         D(closest, 'closest')
