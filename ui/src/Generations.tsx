@@ -25,7 +25,7 @@ function Generations({ levels }: { levels: LevelSpec[] }) {
 
       generations.push(
         <Generation
-          content={generation.reverse().join("")}
+          content={generation.reverse().join("").replace(/▁/g, " ")}
           prob={lastNode.prob}
         />
       );

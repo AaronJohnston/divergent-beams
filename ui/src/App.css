@@ -225,3 +225,11 @@ button:hover {
   height: 300px;
   margin: 15px 30px;
 }
+
+.Generation {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  margin-right: 12px;
+}
