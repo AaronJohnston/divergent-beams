@@ -23,16 +23,28 @@ function Generations({ levels }: { levels: LevelSpec[] }) {
         current = next;
       }
 
-      generations.push(
-        <Generation
-          content={generation.reverse().join("").replace(/▁/g, " ")}
-          prob={lastNode.prob}
-        />
-      );
+      generations.push({
+        content: generation.reverse().join("").replace(/▁/g, " "),
+        prob: lastNode.prob,
+      });
     }
+
+    generations.sort((a, b) => b.prob - a.prob);
   }
 
-  return <div className="Generations">{generations}</div>;
+  return (
+    <div className="Generations">
+      {generations.map((generation) => {
+        return (
+          <Generation
+            key={generation.content}
+            content={generation.content}
+            prob={generation.prob}
+          />
+        );
+      })}
+    </div>
+  );
 }
 
 export default Generations;
