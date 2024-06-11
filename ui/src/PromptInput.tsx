@@ -1,5 +1,5 @@
 import { useState } from "react";
-// import Switch from "react-switch";
+import Switch from "react-switch";
 import { PromptOptions } from "./types";
 
 function PromptInput({
@@ -10,11 +10,12 @@ function PromptInput({
   const [prompt, setPrompt] = useState(
     "What is the closest star to the Earth?"
   );
-  // const [embedPrune, setEmbedPrune] = useState(true);
   const [maxBeams, setMaxBeams] = useState(5);
   const [maxNewTokens, setMaxNewTokens] = useState(50);
   const [topP, setTopP] = useState(0.9);
   const [topK, setTopK] = useState(5);
+  const [topPDecayOn, setTopPDecayOn] = useState(false);
+  const [topPDecay, setTopPDecay] = useState(0.95);
 
   return (
     <div className="PromptInput">
@@ -24,18 +25,6 @@ function PromptInput({
         // onBlur={() => evaluatePrompt(currPrompt)}
       ></textarea>
       <div className="PromptInput-menu">
-        {/* <label className="PromptInput-label">
-          <Switch
-            className="PromptInput-switch"
-            checked={embedPrune}
-            onChange={setEmbedPrune}
-            height={20}
-            width={40}
-            onColor="#7fd293"
-            offColor="#aaa"
-          ></Switch>
-          PRUNE STEP
-        </label> */}
         <label className="PromptInput-label">
           <input
             className="PromptInput-number"
@@ -56,6 +45,31 @@ function PromptInput({
           ></input>
           TOP-K
         </label>
+        <label className="PromptInput-label">
+          <Switch
+            className="PromptInput-switch"
+            checked={topPDecayOn}
+            onChange={setTopPDecayOn}
+            height={20}
+            width={40}
+            onColor="#7fd293"
+            offColor="#aaa"
+          ></Switch>
+          TOP P DECAY
+        </label>
+        {topPDecayOn ? (
+          <label className="PromptInput-label">
+            <input
+              className="PromptInput-number"
+              type="number"
+              value={topPDecay}
+              onChange={(e) => setTopPDecay(parseFloat(e.target.value))}
+            ></input>
+            TOP P DECAY FACTOR
+          </label>
+        ) : (
+          <></>
+        )}
         <label className="PromptInput-label">
           <input
             className="PromptInput-number"
@@ -78,7 +92,14 @@ function PromptInput({
         <button
           className="PromptInput-submit"
           onClick={() =>
-            evaluatePrompt({ prompt, topP, topK, maxBeams, maxNewTokens })
+            evaluatePrompt({
+              prompt,
+              topP,
+              topK,
+              maxBeams,
+              maxNewTokens,
+              topPDecay: topPDecayOn ? topPDecay : 1.0,
+            })
           }
         >
           EVALUATE

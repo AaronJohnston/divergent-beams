@@ -18,4 +18,5 @@ export type PromptOptions = {
   topK: number;
   maxBeams: number;
   maxNewTokens: number;
+  topPDecay: number;
 };

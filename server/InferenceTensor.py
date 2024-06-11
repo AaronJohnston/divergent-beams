@@ -43,7 +43,7 @@ class InferenceTensor:
 
         self.batch_size = 8
         
-    def candidates_generator(self, top_p: float, top_p_falloff: float, top_k: float, max_beams: int, max_new_tokens: int, prompt: str):
+    def candidates_generator(self, top_p: float, top_p_decay: float, top_k: float, max_beams: int, max_new_tokens: int, prompt: str):
         candidates, candidate_logprobs = self._init_candidates(prompt)
         for level_idx in range(max_new_tokens):
             logits, embeddings = self._infer(candidates, candidate_logprobs)
@@ -54,7 +54,7 @@ class InferenceTensor:
 
             candidates, candidate_parents, candidate_logprobs = self._top_p(logits, candidates, candidate_logprobs, top_p, top_k)
             yield self._format_top_p(level_idx, candidates, candidate_parents, candidate_logprobs)
-            top_p *= top_p_falloff
+            top_p *= top_p_decay
 
         yield f"event: message\nid: END\ndata: []\n\n"
 
