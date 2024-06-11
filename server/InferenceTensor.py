@@ -95,7 +95,7 @@ class InferenceTensor:
         # === CPU ===
         embeddings_np = embeddings.float().numpy(force=True)
         D(embeddings_np, 'embeddings_np')
-        k_means = KMeans(n_clusters=min(2, embeddings_np.shape[0]), random_state=0, n_init="auto")
+        k_means = KMeans(n_clusters=min(max_beams, embeddings_np.shape[0]), random_state=0, n_init="auto")
         k_mean_space = k_means.fit_transform(embeddings_np)
         D(k_mean_space, 'k_mean_space')
         k_mean_clusters = k_means.predict(embeddings_np)
