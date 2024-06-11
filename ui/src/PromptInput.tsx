@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Switch from "react-switch";
+// import Switch from "react-switch";
 import { PromptOptions } from "./types";
 
 function PromptInput({
@@ -10,10 +10,11 @@ function PromptInput({
   const [prompt, setPrompt] = useState(
     "What is the closest star to the Earth?"
   );
-  const [embedPrune, setEmbedPrune] = useState(true);
+  // const [embedPrune, setEmbedPrune] = useState(true);
   const [maxBeams, setMaxBeams] = useState(5);
   const [maxNewTokens, setMaxNewTokens] = useState(50);
   const [topP, setTopP] = useState(0.9);
+  const [topK, setTopK] = useState(5);
 
   return (
     <div className="PromptInput">
@@ -23,7 +24,7 @@ function PromptInput({
         // onBlur={() => evaluatePrompt(currPrompt)}
       ></textarea>
       <div className="PromptInput-menu">
-        <label className="PromptInput-label">
+        {/* <label className="PromptInput-label">
           <Switch
             className="PromptInput-switch"
             checked={embedPrune}
@@ -34,7 +35,7 @@ function PromptInput({
             offColor="#aaa"
           ></Switch>
           PRUNE STEP
-        </label>
+        </label> */}
         <label className="PromptInput-label">
           <input
             className="PromptInput-number"
@@ -44,6 +45,16 @@ function PromptInput({
             onChange={(e) => setTopP(parseFloat(e.target.value))}
           ></input>
           TOP-P
+        </label>
+        <label className="PromptInput-label">
+          <input
+            className="PromptInput-number"
+            type="number"
+            value={topK}
+            step={1}
+            onChange={(e) => setTopK(parseFloat(e.target.value))}
+          ></input>
+          TOP-K
         </label>
         <label className="PromptInput-label">
           <input
@@ -67,7 +78,7 @@ function PromptInput({
         <button
           className="PromptInput-submit"
           onClick={() =>
-            evaluatePrompt({ prompt, topP, maxBeams, maxNewTokens })
+            evaluatePrompt({ prompt, topP, topK, maxBeams, maxNewTokens })
           }
         >
           EVALUATE

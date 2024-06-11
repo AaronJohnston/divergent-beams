@@ -11,8 +11,6 @@ const TREE_ENDPOINT =
 function App() {
   const [eventSource, setEventSource] = useState<EventSource | null>(null);
   const [levels, setLevels] = useState<LevelSpec[]>([]);
-  const [lastPromptOptions, setLastPromptOptions] =
-    useState<PromptOptions | null>(null);
 
   const cancelGeneration = () => {
     if (eventSource) {
@@ -23,9 +21,8 @@ function App() {
 
   const evaluatePrompt = (promptOptions: PromptOptions) => {
     console.log("OPENING EVENT SOURCE");
-    const url = `${TREE_ENDPOINT}?topP=${promptOptions.topP}&maxBeams=${promptOptions.maxBeams}&maxNewTokens=${promptOptions.maxNewTokens}&prompt=${promptOptions.prompt}`;
+    const url = `${TREE_ENDPOINT}?topP=${promptOptions.topP}&topK=${promptOptions.topK}&maxBeams=${promptOptions.maxBeams}&maxNewTokens=${promptOptions.maxNewTokens}&prompt=${promptOptions.prompt}`;
     const eventSource = new EventSource(url);
-    setLastPromptOptions(promptOptions);
     setLevels([]);
 
     eventSource.onerror = (event) => {
@@ -52,10 +49,7 @@ function App() {
         <h1>Divergent Beams</h1>
       </header>
       <div className="App-content">
-        <PromptInput
-          lastPromptOptions={lastPromptOptions}
-          evaluatePrompt={evaluatePrompt}
-        ></PromptInput>
+        <PromptInput evaluatePrompt={evaluatePrompt}></PromptInput>
         <GenTree
           levels={levels}
           isGenerating={
