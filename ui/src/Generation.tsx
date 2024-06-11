@@ -12,7 +12,6 @@ function Generation({
       className="Generation"
       style={{ backgroundColor: getGenerationColor(prob, totalProb) }}
     >
-      <div className="Generation-prob">{prob.toFixed(2)}</div>
       <div className="Generation-content">{content}</div>
     </div>
   );

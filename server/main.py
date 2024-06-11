@@ -2,6 +2,7 @@ print('Starting up server...')
 
 from asyncio import sleep
 import json
+from typing import Union
 from Inference import Inference
 from Environment import Environment
 from pydantic import BaseModel
@@ -31,8 +32,8 @@ def status():
 
 
 @app.get("/api/v1/tree")
-def tree(topP: float, topK: int, maxBeams: int, maxNewTokens: int, prompt: str):
-    return StreamingResponse(inference.candidates_generator(topP, topK, maxBeams, maxNewTokens, prompt), media_type="text/event-stream")
+def tree(topP: float, topK: int, maxBeams: int, maxNewTokens: int, prompt: str, topPFalloff: float = 1.0):
+    return StreamingResponse(inference.candidates_generator(topP, topPFalloff, topK, maxBeams, maxNewTokens, prompt), media_type="text/event-stream")
 
 
 if __name__ == "__main__":
