@@ -243,10 +243,11 @@ button:hover {
 }
 
 .GenLevel-timing {
+  text-align: right;
   height: 1rem;
   font-size: 0.7rem;
   color: var(--secondary);
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .GenLevel-nodes {
