@@ -9,6 +9,7 @@ import time
 from collections import namedtuple
 import json
 from sklearn.cluster import KMeans
+import random
 
 torch.random.manual_seed(0)
 
@@ -127,6 +128,10 @@ class InferenceTensor:
         
         return new_candidates, new_candidate_parents, new_candidate_aunts, new_candidate_logprobs, new_candidate_logits
         
+    def _farthest_neighbors(self, logits, embeddings, candidates, candidate_logprobs, max_beams):
+        pass
+
+
     def _top_p(self, logits, candidates, candidate_logprobs, top_p, top_k):
         D(candidates, 'candidates')
         D(candidate_logprobs, 'candidate_logprobs')
