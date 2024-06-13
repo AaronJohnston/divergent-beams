@@ -27,7 +27,11 @@ function Generations({ levels }: { levels: LevelSpec[] }) {
     }
 
     generations.push({
-      content: generation.reverse().join("").replace(/▁/g, " "),
+      content: generation
+        .reverse()
+        .join("")
+        .replace(/▁/g, " ")
+        .replace(/<0x0A>/g, "<br />"),
       prob: lastNode.prob,
     });
   }

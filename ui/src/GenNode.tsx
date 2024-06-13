@@ -14,7 +14,7 @@ const GenNode = forwardRef<
       ref={ref}
       style={{ backgroundColor: getNodeColor(node, totalProb) }}
     >
-      {node.content.replace(/▁/g, "").replace(/\n/g, "\\n")}
+      {node.content.replace(/▁/g, "").replace(/<0x0A>/g, "\\n")}
     </div>
   );
 });
