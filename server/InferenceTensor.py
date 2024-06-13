@@ -183,7 +183,7 @@ class InferenceTensor:
         D(new_candidates, 'new_candidates')
         new_candidate_parents = torch.arange(candidates.shape[0]).to(self.device)[selected]
         D(new_candidate_parents, 'new_candidate_parents')
-        new_candidate_aunts = [list(torch.nonzero(closest_per_candidate == i).squeeze(-1).tolist().filter(lambda x: x != i)) \
+        new_candidate_aunts = [list(filter(lambda x: x != i, torch.nonzero(closest_per_candidate == i).squeeze(-1).tolist())) \
                        for i in range(new_candidates.shape[0])]
         D(new_candidate_aunts, 'new_candidate_aunts')
         new_candidate_logprobs = torch.zeros((new_candidates.shape[0],)).to(self.device)

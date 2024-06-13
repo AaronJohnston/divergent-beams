@@ -20,4 +20,5 @@ export type PromptOptions = {
   maxBeams: number;
   maxNewTokens: number;
   topPDecay: number;
+  gatherAlgo: string;
 };

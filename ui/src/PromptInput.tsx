@@ -16,6 +16,7 @@ function PromptInput({
   const [topK, setTopK] = useState(5);
   const [topPDecayOn, setTopPDecayOn] = useState(false);
   const [topPDecay, setTopPDecay] = useState(0.95);
+  const [gatherAlgo, setGatherAlgo] = useState<string>("farthest_neighbors");
 
   return (
     <div className="PromptInput">
@@ -89,6 +90,16 @@ function PromptInput({
           ></input>
           MAX NEW TOKENS
         </label>
+        <label className="PromptInput-label">
+          <select
+            value={gatherAlgo}
+            onChange={(e) => setGatherAlgo(e.target.value)}
+          >
+            <option value="farthest_neighbors">Farthest Neighbors</option>
+            <option value="k_means">K-Means</option>
+          </select>
+          GATHER ALGO
+        </label>
         <button
           className="PromptInput-submit"
           onClick={() =>
@@ -99,6 +110,7 @@ function PromptInput({
               maxBeams,
               maxNewTokens,
               topPDecay: topPDecayOn ? topPDecay : 1.0,
+              gatherAlgo,
             })
           }
         >
