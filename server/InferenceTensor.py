@@ -48,13 +48,11 @@ class InferenceTensor:
     def candidates_generator(self, top_p: float, top_p_decay: float, top_k: float, max_beams: int, max_new_tokens: int, gatherAlgo: str, prompt: str):
         candidates, candidate_logprobs = self._init_candidates(prompt)
         for level_idx in range(max_new_tokens):
+            start = time.perf_counter()
             logits, embeddings = self._infer(candidates, candidate_logprobs)
-
-            self._farthest_neighbors(logits, embeddings, candidates, candidate_logprobs, max_beams)
             
             if candidates.shape[0] > max_beams:
                 if gatherAlgo == 'k_means':
-                    start = time.perf_counter()
                     candidates, candidate_parents, candidate_aunts, candidate_logprobs, logits = self._k_means(logits, embeddings, candidates, candidate_logprobs, max_beams)
                     inference_duration = time.perf_counter() - start
                     print('K MEANS PRIOR {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
@@ -62,7 +60,6 @@ class InferenceTensor:
                     print('K MEANS AFTER {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
 
                 elif gatherAlgo == 'farthest_neighbors':
-                    start = time.perf_counter()
                     candidates, candidate_parents, candidate_aunts, candidate_logprobs, logits = self._farthest_neighbors(logits, embeddings, candidates, candidate_logprobs, max_beams)
                     inference_duration = time.perf_counter() - start
                     print('F NEIGHBORS PRIOR {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
@@ -70,7 +67,6 @@ class InferenceTensor:
                     print('F NEIGHBORS AFTER {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
 
 
-            start = time.perf_counter()
             candidates, candidate_parents, candidate_logprobs = self._top_p(logits, candidates, candidate_logprobs, top_p, top_k)
             inference_duration = time.perf_counter() - start
             print('TOP P PRIOR {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
