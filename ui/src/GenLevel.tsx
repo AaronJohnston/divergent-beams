@@ -13,6 +13,9 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
         <div className={`GenLevel-label ${level.level_type}`}>
           {level.level_type}
         </div>
+        <div className="GenLevel-timing">
+          {Math.round(level.duration * 100)} ms
+        </div>
         <div className="GenLevel-nodes">
           {level.nodes.map((node, idx) => {
             return (
@@ -44,9 +47,12 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
           current.parentElement.parentElement.previousElementSibling &&
           node.parent !== undefined
         ) {
+          console.log(
+            current.parentElement.parentElement.previousElementSibling
+          );
           const parentElement =
             current.parentElement.parentElement.previousElementSibling
-              .children[1].children[node.parent];
+              .children[2].children[node.parent];
           drawEdge(
             parentElement,
             current,
@@ -58,7 +64,7 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
             for (const aunt of node.aunts) {
               const auntElement =
                 current.parentElement.parentElement.previousElementSibling
-                  .children[1].children[aunt];
+                  .children[2].children[aunt];
               drawEdge(auntElement, current, "#35495522", "4 4");
             }
           }

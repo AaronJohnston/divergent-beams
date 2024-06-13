@@ -3,6 +3,7 @@
   --primary: #050029;
   --class-a: #050029;
   --class-b: #fffef7;
+  --secondary: #3549556b;
   --accent: #f7978d;
   --dark-text: #333;
   --light-text: var(--bg);
@@ -197,7 +198,7 @@ button:hover {
   line-height: 1rem;
   font-size: 0.8rem;
   font-weight: 700;
-  margin-bottom: 20px;
+  margin-bottom: 3px;
   padding: 0 8px 0 3px;
   color: var(--light-text);
 }
@@ -211,6 +212,13 @@ button:hover {
   background-color: var(--class-b);
   border: solid 1px var(--class-a);
   color: var(--class-a);
+}
+
+.GenLevel-timing {
+  height: 1rem;
+  font-size: 0.7rem;
+  color: var(--secondary);
+  margin-bottom: 20px;
 }
 
 .GenLevel-nodes {

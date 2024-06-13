@@ -49,33 +49,39 @@ class InferenceTensor:
             logits, embeddings = self._infer(candidates, candidate_logprobs)
         
             if candidates.shape[0] > max_beams:
+                start = time.perf_counter()
                 candidates, candidate_parents, candidate_aunts, candidate_logprobs, logits = self._k_means(logits, embeddings, candidates, candidate_logprobs, max_beams)
-                yield self._format_k_means(level_idx, candidates, candidate_parents, candidate_aunts, candidate_logprobs)
+                inference_duration = time.perf_counter() - start
+                yield self._format_k_means(level_idx, candidates, candidate_parents, candidate_aunts, candidate_logprobs, inference_duration)
+                print('K MEANS {}: {} candidates, {} inference time, {} total time'.format(level_idx, candidates.shape[0], inference_duration, time.perf_counter() - start))
 
+            start = time.perf_counter()
             candidates, candidate_parents, candidate_logprobs = self._top_p(logits, candidates, candidate_logprobs, top_p, top_k)
-            yield self._format_top_p(level_idx, candidates, candidate_parents, candidate_logprobs)
+            inference_duration = time.perf_counter() - start
+            yield self._format_top_p(level_idx, candidates, candidate_parents, candidate_logprobs, inference_duration)
+            print('TOP P {}: {} candidates, {} inference time, {} total time'.format(level_idx, candidates.shape[0], inference_duration, time.perf_counter() - start))
             top_p *= top_p_decay
 
         yield f"event: message\nid: END\ndata: []\n\n"
 
-    def _format_k_means(self, level_idx, candidates, candidate_parents, candidate_aunts, candidate_logprobs):
+    def _format_k_means(self, level_idx, candidates, candidate_parents, candidate_aunts, candidate_logprobs, duration):
         candidate_texts = self.tokenizer.convert_ids_to_tokens(candidates[:, -1], skip_special_tokens=True)
         candidate_probs = candidate_logprobs.exp()
         candidate_dicts = []
         idx = f"{level_idx}-k"
         for i in range(len(candidate_texts)):
             candidate_dicts.append({'content': candidate_texts[i], 'parent': candidate_parents[i], 'aunts': candidate_aunts[i], 'prob': candidate_probs[i].item()})
-        data = json.dumps({'id': idx, 'level_type': 'k_means', 'nodes': candidate_dicts})
+        data = json.dumps({'id': idx, 'level_type': 'k_means', 'duration': duration, 'nodes': candidate_dicts})
         return f"event: message\nid: {idx}\"\ndata: {data}\n\n"
 
-    def _format_top_p(self, level_idx, candidates, candidate_parents, candidate_logprobs):
+    def _format_top_p(self, level_idx, candidates, candidate_parents, candidate_logprobs, duration):
         candidate_texts = self.tokenizer.convert_ids_to_tokens(candidates[:, -1], skip_special_tokens=True)
         candidate_probs = candidate_logprobs.exp()
         candidate_dicts = []
         idx = f"{level_idx}-p"
         for i in range(len(candidate_texts)):
             candidate_dicts.append({'content': candidate_texts[i], 'parent': candidate_parents[i], 'prob': candidate_probs[i].item()})
-        data = json.dumps({'id': idx, 'level_type': 'top_p', 'nodes': candidate_dicts})
+        data = json.dumps({'id': idx, 'level_type': 'top_p', 'duration': duration, 'nodes': candidate_dicts})
         return f"event: message\nid: {idx}\ndata: {data}\n\n"
 
 

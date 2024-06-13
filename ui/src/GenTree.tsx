@@ -7,6 +7,7 @@ export default function GenTree({ levels }: { levels: LevelSpec[] }) {
       <div className="horiz-scroll-reverse-content">
         <div className="GenLevel">
           <div className="GenLevel-label"></div>
+          <div className="GenLevel-timing"></div>
           <div className="GenLevel-nodes">
             <div className="GenTree-prompt">PROMPT</div>
           </div>
