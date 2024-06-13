@@ -4,6 +4,7 @@ import GenTree from "./GenTree";
 import PromptInput from "./PromptInput";
 import { LevelSpec, PromptOptions } from "./types";
 import Generations from "./Generations";
+import GeneratingMenu from "./GeneratingMenu";
 
 const TREE_ENDPOINT =
   "http://ec2-52-89-34-232.us-west-2.compute.amazonaws.com/api/v1/tree";
@@ -50,13 +51,13 @@ function App() {
       </header>
       <div className="App-content">
         <PromptInput evaluatePrompt={evaluatePrompt}></PromptInput>
-        <GenTree
-          levels={levels}
+        <GeneratingMenu
           isGenerating={
             !!eventSource && eventSource.readyState === eventSource.OPEN
           }
           cancelGeneration={cancelGeneration}
-        ></GenTree>
+        ></GeneratingMenu>
+        <GenTree levels={levels}></GenTree>
         <Generations levels={levels}></Generations>
       </div>
     </div>

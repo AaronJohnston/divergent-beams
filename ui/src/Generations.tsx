@@ -44,7 +44,7 @@ function Generations({ levels }: { levels: LevelSpec[] }) {
   }
 
   return (
-    <div className="Generations horiz-content">
+    <div className="Generations horiz-scroll">
       {generations.map((generation) => {
         return (
           <Generation

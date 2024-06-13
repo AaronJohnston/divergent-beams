@@ -141,10 +141,24 @@ button:hover {
   font-family: var(--main-font);
 }
 
+.GeneratingMenu {
+  height: 2rem;
+}
+
+.GeneratingMenu-cancel {
+  background-color: var(--accent);
+  border: none;
+  color: var(--light-text);
+  font-size: 1rem;
+  padding: 0 5px;
+  margin-left: 10px;
+  font-family: var(--main-font);
+}
+
 .GenTree {
   position: relative;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   height: 50%;
   margin: 15px 30px;
 }
@@ -161,22 +175,6 @@ button:hover {
   margin-right: 20px;
   position: relative;
   top: calc(calc(40px - 1.5rem) / -2);
-}
-
-.GenTree-generatingMenu {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-}
-
-.GenTree-generatingMenu button {
-  background-color: var(--accent);
-  border: none;
-  color: var(--light-text);
-  font-size: 1rem;
-  padding: 0 5px;
-  margin-left: 10px;
-  font-family: var(--main-font);
 }
 
 .GenLevel {
@@ -255,17 +253,18 @@ button:hover {
     rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 }
 
-.horiz-content {
+.horiz-scroll {
   scrollbar-color: var(--primary) var(--bg);
   overflow: auto;
   display: flex;
+  overflow-anchor: auto;
 }
 
-.horiz-content-reverse {
+.horiz-scroll-reverse {
   flex-direction: row-reverse;
 }
 
-.horiz-content-reverse > .horiz-content-reverse-data {
+.horiz-scroll-reverse > .horiz-scroll-reverse-content {
   display: flex;
   flex-direction: row;
 }
