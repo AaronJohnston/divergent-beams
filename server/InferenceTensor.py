@@ -10,6 +10,7 @@ from collections import namedtuple
 import json
 from sklearn.cluster import KMeans
 import random
+from torchmetrics.functional import pairwise_cosine_similarity
 
 torch.random.manual_seed(0)
 
@@ -44,18 +45,30 @@ class InferenceTensor:
 
         self.batch_size = 8
         
-    def candidates_generator(self, top_p: float, top_p_decay: float, top_k: float, max_beams: int, max_new_tokens: int, prompt: str):
+    def candidates_generator(self, top_p: float, top_p_decay: float, top_k: float, max_beams: int, max_new_tokens: int, gatherAlgo: str, prompt: str):
         candidates, candidate_logprobs = self._init_candidates(prompt)
         for level_idx in range(max_new_tokens):
             logits, embeddings = self._infer(candidates, candidate_logprobs)
-        
+
+            self._farthest_neighbors(logits, embeddings, candidates, candidate_logprobs, max_beams)
+            
             if candidates.shape[0] > max_beams:
-                start = time.perf_counter()
-                candidates, candidate_parents, candidate_aunts, candidate_logprobs, logits = self._k_means(logits, embeddings, candidates, candidate_logprobs, max_beams)
-                inference_duration = time.perf_counter() - start
-                print('K MEANS PRIOR {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
-                yield self._format_k_means(level_idx, candidates, candidate_parents, candidate_aunts, candidate_logprobs, inference_duration)
-                print('K MEANS AFTER {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
+                if gatherAlgo == 'k_means':
+                    start = time.perf_counter()
+                    candidates, candidate_parents, candidate_aunts, candidate_logprobs, logits = self._k_means(logits, embeddings, candidates, candidate_logprobs, max_beams)
+                    inference_duration = time.perf_counter() - start
+                    print('K MEANS PRIOR {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
+                    yield self._format_gather(level_idx, 'k', candidates, candidate_parents, candidate_aunts, candidate_logprobs, inference_duration)
+                    print('K MEANS AFTER {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
+
+                elif gatherAlgo == 'farthest_neighbors':
+                    start = time.perf_counter()
+                    candidates, candidate_parents, candidate_aunts, candidate_logprobs, logits = self._farthest_neighbors(logits, embeddings, candidates, candidate_logprobs, max_beams)
+                    inference_duration = time.perf_counter() - start
+                    print('F NEIGHBORS PRIOR {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
+                    yield self._format_gather(level_idx, 'f', candidates, candidate_parents, candidate_aunts, candidate_logprobs, inference_duration)
+                    print('F NEIGHBORS AFTER {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
+
 
             start = time.perf_counter()
             candidates, candidate_parents, candidate_logprobs = self._top_p(logits, candidates, candidate_logprobs, top_p, top_k)
@@ -67,11 +80,11 @@ class InferenceTensor:
 
         yield f"event: message\nid: END\ndata: []\n\n"
 
-    def _format_k_means(self, level_idx, candidates, candidate_parents, candidate_aunts, candidate_logprobs, duration):
+    def _format_gather(self, suffix, level_idx, candidates, candidate_parents, candidate_aunts, candidate_logprobs, duration):
         candidate_texts = self.tokenizer.convert_ids_to_tokens(candidates[:, -1], skip_special_tokens=True)
         candidate_probs = candidate_logprobs.exp()
         candidate_dicts = []
-        idx = f"{level_idx}-k"
+        idx = f"{level_idx}-{suffix}"
         for i in range(len(candidate_texts)):
             candidate_dicts.append({'content': candidate_texts[i], 'parent': candidate_parents[i], 'aunts': candidate_aunts[i], 'prob': candidate_probs[i].item()})
         data = json.dumps({'id': idx, 'level_type': 'gather', 'duration': duration, 'nodes': candidate_dicts})
@@ -129,7 +142,55 @@ class InferenceTensor:
         return new_candidates, new_candidate_parents, new_candidate_aunts, new_candidate_logprobs, new_candidate_logits
         
     def _farthest_neighbors(self, logits, embeddings, candidates, candidate_logprobs, max_beams):
-        pass
+        D(candidates, 'candidates')
+        D(candidate_logprobs, 'candidate_logprobs')
+        D(embeddings, 'embeddings')
+        
+        selected = torch.zeros((candidates.shape[0],), dtype=torch.bool).to(self.device)
+        max_prob_idx = candidate_logprobs.argmax()
+        selected[max_prob_idx] = 1
+        
+        D(selected, 'selected')
+        
+        for idx in range(min(max_beams - 1, candidates.shape[0])):
+            selected_embeddings = embeddings[selected]
+            D(selected_embeddings, 'selected_embeddings')
+            # Add 2 because bfloat16 on cuda can have imprecision and we need 0 to be lower than every
+            # cosine distance
+            distances = torch.add(2, pairwise_cosine_similarity(embeddings, selected_embeddings), alpha=-1)
+            D(distances, 'distances')
+            min_distances = torch.min(distances, dim=1).values
+            D(min_distances, 'min_distances')
+            min_remaining_distances = min_distances * ~selected
+            D(min_remaining_distances, 'min_remaining_distances')
+            next_selected = min_remaining_distances.argmax(dim=0)
+            selected[next_selected] = 1
+            D(selected, 'selected (end of loop)')
+            
+        # We have all the candidates that are selected to move forward. Figure out which probability mass
+        # to assign where.
+        selected_embeddings = embeddings[selected]
+        D(selected_embeddings, 'selected_embeddings')
+        # Add 2 because bfloat16 on cuda can have imprecision and we need 0 to be lower than every
+        # cosine distance
+        distances = torch.add(2, pairwise_cosine_similarity(embeddings, selected_embeddings), alpha=-1)
+        D(distances, 'distances')
+        
+        closest_per_candidate = distances.argmin(dim=1)
+        D(closest_per_candidate, 'closest_per_candidate')
+        
+        new_candidates = candidates[selected]
+        D(new_candidates, 'new_candidates')
+        new_candidate_parents = torch.arange(candidates.shape[0]).to(self.device)[selected]
+        D(new_candidate_parents, 'new_candidate_parents')
+        new_candidate_aunts = [list(torch.nonzero(closest_per_candidate == i).squeeze(-1).tolist().filter(lambda x: x != i)) \
+                       for i in range(new_candidates.shape[0])]
+        D(new_candidate_aunts, 'new_candidate_aunts')
+        new_candidate_logprobs = torch.zeros((new_candidates.shape[0],)).to(self.device)
+        new_candidate_logprobs.index_add_(0, closest_per_candidate, candidate_logprobs)
+        D(new_candidate_logprobs, 'new_candidate_logprobs')
+        new_candidate_logits = logits[selected]
+                
 
 
     def _top_p(self, logits, candidates, candidate_logprobs, top_p, top_k):

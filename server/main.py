@@ -32,8 +32,8 @@ def status():
 
 
 @app.get("/api/v1/tree")
-def tree(topP: float, topK: int, maxBeams: int, maxNewTokens: int, prompt: str, topPDecay: float = 1.0):
-    return StreamingResponse(inference.candidates_generator(topP, topPDecay, topK, maxBeams, maxNewTokens, prompt), media_type="text/event-stream")
+def tree(topP: float, topK: int, maxBeams: int, maxNewTokens: int, gatherAlgo: str, prompt: str, topPDecay: float = 1.0):
+    return StreamingResponse(inference.candidates_generator(topP, topPDecay, topK, maxBeams, maxNewTokens, gatherAlgo, prompt), media_type="text/event-stream")
 
 
 if __name__ == "__main__":
