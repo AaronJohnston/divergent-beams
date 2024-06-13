@@ -21,6 +21,7 @@ function App() {
   };
 
   const evaluatePrompt = (promptOptions: PromptOptions) => {
+    cancelGeneration();
     console.log("OPENING EVENT SOURCE");
     const url = `${TREE_ENDPOINT}?topP=${promptOptions.topP}&topPDecay=${promptOptions.topPDecay}&topK=${promptOptions.topK}&maxBeams=${promptOptions.maxBeams}&maxNewTokens=${promptOptions.maxNewTokens}&prompt=${promptOptions.prompt}`;
     const eventSource = new EventSource(url);
