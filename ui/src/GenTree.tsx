@@ -11,7 +11,7 @@ export default function GenTree({
   cancelGeneration: () => void;
 }) {
   return (
-    <div className="GenTree">
+    <div className="GenTree horiz-content">
       {isGenerating && (
         <div className="GenTree-generatingMenu">
           GENERATING...

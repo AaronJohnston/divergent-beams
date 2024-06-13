@@ -5,7 +5,7 @@ function Generations({ levels }: { levels: LevelSpec[] }) {
   const generations = [];
 
   if (levels.length === 0) {
-    return <div className="Generations"></div>;
+    return <div className="Generations horiz-content"></div>;
   }
 
   for (const lastNode of levels[levels.length - 1].nodes) {
@@ -45,7 +45,7 @@ function Generations({ levels }: { levels: LevelSpec[] }) {
   );
 
   return (
-    <div className="Generations">
+    <div className="Generations horiz-content">
       {generations.map((generation) => {
         return (
           <Generation
