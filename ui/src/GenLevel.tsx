@@ -56,7 +56,7 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
             parentElement,
             current,
             "#354955",
-            level.level_type === "k_means" ? "4 4" : ""
+            level.level_type === "gather" ? "4 4" : ""
           );
 
           if (node.aunts !== undefined) {

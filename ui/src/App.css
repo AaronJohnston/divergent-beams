@@ -163,6 +163,29 @@ button:hover {
   font-family: var(--main-font);
 }
 
+.GeneratingMenu-error {
+  color: red;
+  animation: error-shake 0.3s ease-in-out;
+}
+
+@keyframes error-shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
 .GenTree {
   position: relative;
   display: flex;
@@ -203,12 +226,12 @@ button:hover {
   color: var(--light-text);
 }
 
-.GenLevel-label.top_p {
+.GenLevel-label.sample {
   background-color: var(--class-a);
   color: var(--class-b);
 }
 
-.GenLevel-label.k_means {
+.GenLevel-label.gather {
   background-color: var(--class-b);
   border: solid 1px var(--class-a);
   color: var(--class-a);

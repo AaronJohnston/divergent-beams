@@ -12,6 +12,7 @@ const TREE_ENDPOINT =
 function App() {
   const [eventSource, setEventSource] = useState<EventSource | null>(null);
   const [levels, setLevels] = useState<LevelSpec[]>([]);
+  const [isError, setIsError] = useState<boolean>(false);
 
   const cancelGeneration = () => {
     if (eventSource) {
@@ -29,6 +30,7 @@ function App() {
 
     eventSource.onerror = (event) => {
       console.error("EventSource error:", event);
+      setIsError(true);
       eventSource.close();
     };
 
@@ -53,6 +55,7 @@ function App() {
       <div className="App-content">
         <PromptInput evaluatePrompt={evaluatePrompt}></PromptInput>
         <GeneratingMenu
+          isError={isError}
           isGenerating={
             !!eventSource && eventSource.readyState === eventSource.OPEN
           }

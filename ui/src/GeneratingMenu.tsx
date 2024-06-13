@@ -1,13 +1,21 @@
 function GeneratingMenu({
+  isError,
   isGenerating,
   cancelGeneration,
 }: {
+  isError: boolean;
   isGenerating: boolean;
   cancelGeneration: () => void;
 }) {
   return (
     <div className="GeneratingMenu">
-      {isGenerating ? (
+      {isError ? (
+        <>
+          <span className="GeneratingMenu-error">
+            ERROR CONNECTING TO SERVER! PLEASE TRY AGAIN LATER.
+          </span>
+        </>
+      ) : isGenerating ? (
         <>
           <span className="loader"></span>
           <p>GENERATING...</p>

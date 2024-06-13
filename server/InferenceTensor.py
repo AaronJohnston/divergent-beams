@@ -73,7 +73,7 @@ class InferenceTensor:
         idx = f"{level_idx}-k"
         for i in range(len(candidate_texts)):
             candidate_dicts.append({'content': candidate_texts[i], 'parent': candidate_parents[i], 'aunts': candidate_aunts[i], 'prob': candidate_probs[i].item()})
-        data = json.dumps({'id': idx, 'level_type': 'k_means', 'duration': duration, 'nodes': candidate_dicts})
+        data = json.dumps({'id': idx, 'level_type': 'gather', 'duration': duration, 'nodes': candidate_dicts})
         return f"event: message\nid: {idx}\"\ndata: {data}\n\n"
 
     def _format_top_p(self, level_idx, candidates, candidate_parents, candidate_logprobs, duration):
@@ -83,7 +83,7 @@ class InferenceTensor:
         idx = f"{level_idx}-p"
         for i in range(len(candidate_texts)):
             candidate_dicts.append({'content': candidate_texts[i], 'parent': candidate_parents[i], 'prob': candidate_probs[i].item()})
-        data = json.dumps({'id': idx, 'level_type': 'top_p', 'duration': duration, 'nodes': candidate_dicts})
+        data = json.dumps({'id': idx, 'level_type': 'sample', 'duration': duration, 'nodes': candidate_dicts})
         return f"event: message\nid: {idx}\ndata: {data}\n\n"
 
 

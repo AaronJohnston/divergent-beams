@@ -17,7 +17,7 @@ function Generations({ levels }: { levels: LevelSpec[] }) {
 
         const next = levels[i].nodes[current.parent];
 
-        if (levels[i].level_type === "top_p") {
+        if (levels[i].level_type === "sample") {
           generation.push(next.content);
         }
 

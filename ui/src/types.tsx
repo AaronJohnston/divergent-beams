@@ -1,6 +1,6 @@
 export type LevelSpec = {
   id: string;
-  level_type: "k_means" | "top_p";
+  level_type: "gather" | "sample";
   duration: number;
   nodes: NodeSpec[];
 };
