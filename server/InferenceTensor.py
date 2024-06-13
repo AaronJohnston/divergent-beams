@@ -190,7 +190,8 @@ class InferenceTensor:
         new_candidate_logprobs.index_add_(0, closest_per_candidate, candidate_logprobs)
         D(new_candidate_logprobs, 'new_candidate_logprobs')
         new_candidate_logits = logits[selected]
-                
+        
+        return new_candidates, new_candidate_parents, new_candidate_aunts, new_candidate_logprobs, new_candidate_logits
 
 
     def _top_p(self, logits, candidates, candidate_logprobs, top_p, top_k):

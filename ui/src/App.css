@@ -132,6 +132,11 @@ button:hover {
   margin-right: 27px;
 }
 
+.PromptInput select {
+  font-family: var(--main-font);
+  margin-right: 10px;
+}
+
 .PromptInput-submit {
   margin-top: auto;
   background-color: var(--accent);

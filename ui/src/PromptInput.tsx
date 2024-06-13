@@ -95,7 +95,7 @@ function PromptInput({
             value={gatherAlgo}
             onChange={(e) => setGatherAlgo(e.target.value)}
           >
-            <option value="farthest_neighbors">Farthest Neighbors</option>
+            <option value="farthest_neighbors">kFN</option>
             <option value="k_means">K-Means</option>
           </select>
           GATHER ALGO
