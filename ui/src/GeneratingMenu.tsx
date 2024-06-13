@@ -8,9 +8,13 @@ function GeneratingMenu({
   return (
     <div className="GeneratingMenu">
       {isGenerating ? (
-        <button className="GeneratingMenu-cancel" onClick={cancelGeneration}>
-          Cancel Generation
-        </button>
+        <>
+          <span className="loader"></span>
+          <p>GENERATING...</p>
+          <button className="GeneratingMenu-cancel" onClick={cancelGeneration}>
+            CANCEL
+          </button>
+        </>
       ) : null}
     </div>
   );
