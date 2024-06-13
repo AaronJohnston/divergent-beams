@@ -12,21 +12,23 @@ export default function GenTree({
 }) {
   return (
     <div className="GenTree horiz-content">
-      {isGenerating && (
-        <div className="GenTree-generatingMenu">
-          GENERATING...
-          <button onClick={cancelGeneration}>CANCEL</button>
+      <div>
+        {isGenerating && (
+          <div className="GenTree-generatingMenu">
+            GENERATING...
+            <button onClick={cancelGeneration}>CANCEL</button>
+          </div>
+        )}
+        <div className="GenLevel">
+          <div className="GenLevel-label"></div>
+          <div className="GenLevel-nodes">
+            <div className="GenTree-prompt">PROMPT</div>
+          </div>
         </div>
-      )}
-      <div className="GenLevel">
-        <div className="GenLevel-label"></div>
-        <div className="GenLevel-nodes">
-          <div className="GenTree-prompt">PROMPT</div>
-        </div>
+        {levels.map((level) => (
+          <GenLevel key={level.id} level={level} />
+        ))}
       </div>
-      {levels.map((level) => (
-        <GenLevel key={level.id} level={level} />
-      ))}
     </div>
   );
 }

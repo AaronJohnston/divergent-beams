@@ -247,4 +247,11 @@ button:hover {
 .horiz-content {
   scrollbar-color: var(--primary) var(--bg);
   overflow: auto;
+  flex-direction: row-reverse;
+  display: flex;
+}
+
+.horiz-content > div {
+  display: flex;
+  flex-direction: row;
 }
