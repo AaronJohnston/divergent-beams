@@ -14,7 +14,7 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
           {level.level_type}
         </div>
         <div className="GenLevel-timing">
-          {Math.round(level.duration * 100)} ms
+          {Math.round(level.duration * 1000)} ms
         </div>
         <div className="GenLevel-nodes">
           {level.nodes.map((node, idx) => {
@@ -34,9 +34,11 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
 
   useEffect(() => {
     nodesRef.current = nodesRef.current.slice(0, level.nodes.length); // Make elements set by child renders visible as part of array
-  }, [level, rendered]);
+  }, [level]);
 
   useEffect(() => {
+    // console.log(`GenLevel effect ${level.id} @ ${Date.now()}`);
+    // console.time(`GenLevel effect ${level.id}`);
     if (nodesRef.current) {
       for (let i = 0; i < level.nodes.length; i++) {
         const current = nodesRef.current[i];
@@ -47,9 +49,6 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
           current.parentElement.parentElement.previousElementSibling &&
           node.parent !== undefined
         ) {
-          console.log(
-            current.parentElement.parentElement.previousElementSibling
-          );
           const parentElement =
             current.parentElement.parentElement.previousElementSibling
               .children[2].children[node.parent];
@@ -71,7 +70,8 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
         }
       }
     }
-  }, [level, rendered]);
+    // console.timeEnd(`GenLevel effect ${level.id}`);
+  }, [level]);
 
   return rendered;
 }

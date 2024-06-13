@@ -36,7 +36,6 @@ function Generations({ levels }: { levels: LevelSpec[] }) {
 
     generations.sort((a, b) => b.prob - a.prob);
 
-    console.log(levels);
     totalProb = levels[levels.length - 1].nodes.reduce(
       (acc, node) => acc + node.prob,
       0

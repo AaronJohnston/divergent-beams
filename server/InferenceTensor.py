@@ -52,14 +52,16 @@ class InferenceTensor:
                 start = time.perf_counter()
                 candidates, candidate_parents, candidate_aunts, candidate_logprobs, logits = self._k_means(logits, embeddings, candidates, candidate_logprobs, max_beams)
                 inference_duration = time.perf_counter() - start
+                print('K MEANS PRIOR {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
                 yield self._format_k_means(level_idx, candidates, candidate_parents, candidate_aunts, candidate_logprobs, inference_duration)
-                print('K MEANS {}: {} candidates, {} inference time, {} total time'.format(level_idx, candidates.shape[0], inference_duration, time.perf_counter() - start))
+                print('K MEANS AFTER {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
 
             start = time.perf_counter()
             candidates, candidate_parents, candidate_logprobs = self._top_p(logits, candidates, candidate_logprobs, top_p, top_k)
             inference_duration = time.perf_counter() - start
+            print('TOP P PRIOR {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
             yield self._format_top_p(level_idx, candidates, candidate_parents, candidate_logprobs, inference_duration)
-            print('TOP P {}: {} candidates, {} inference time, {} total time'.format(level_idx, candidates.shape[0], inference_duration, time.perf_counter() - start))
+            print('TOP P AFTER {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
             top_p *= top_p_decay
 
         yield f"event: message\nid: END\ndata: []\n\n"
