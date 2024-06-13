@@ -11,14 +11,14 @@ export default function GenTree({
   cancelGeneration: () => void;
 }) {
   return (
-    <div className="GenTree horiz-content">
-      <div>
-        {isGenerating && (
-          <div className="GenTree-generatingMenu">
-            GENERATING...
-            <button onClick={cancelGeneration}>CANCEL</button>
-          </div>
-        )}
+    <div className="GenTree horiz-content horiz-content-reverse">
+      {isGenerating && (
+        <div className="GenTree-generatingMenu">
+          GENERATING...
+          <button onClick={cancelGeneration}>CANCEL</button>
+        </div>
+      )}
+      <div className="horiz-content-reverse-data">
         <div className="GenLevel">
           <div className="GenLevel-label"></div>
           <div className="GenLevel-nodes">

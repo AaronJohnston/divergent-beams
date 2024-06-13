@@ -1,8 +1,8 @@
 :root {
   --bg: #fffef7;
   --primary: #050029;
-  --class-a: #1e4e6b;
-  --class-b: #2f79a7;
+  --class-a: #050029;
+  --class-b: #fffef7;
   --accent: #f7978d;
   --dark-text: #333;
   --light-text: var(--bg);
@@ -146,9 +146,7 @@ button:hover {
   display: flex;
   flex-direction: row;
   height: 50%;
-  overflow: hidden;
   margin: 15px 30px;
-  overflow-x: scroll;
 }
 
 .GenTree-prompt {
@@ -185,51 +183,62 @@ button:hover {
   display: flex;
   flex-direction: column;
   justify-content: stretch;
-  margin-right: 12px;
+  align-content: stretch;
+  margin-right: 24px;
 }
 
 .GenLevel-label {
   height: 1rem;
   line-height: 1rem;
   font-size: 0.8rem;
+  font-weight: 700;
   margin-bottom: 20px;
-  padding: 0 3px;
+  padding: 0 8px 0 3px;
   color: var(--light-text);
 }
 
-.GenLevel-label.k_means {
+.GenLevel-label.top_p {
   background-color: var(--class-a);
-  padding-right: 40px;
+  color: var(--class-b);
 }
 
-.GenLevel-label.top_p {
+.GenLevel-label.k_means {
   background-color: var(--class-b);
+  border: solid 1px var(--class-a);
+  color: var(--class-a);
 }
 
 .GenLevel-nodes {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  align-items: flex-end;
+  align-items: stretch;
 }
 
 .GenNode {
   position: relative;
   text-align: left;
-  padding: 0 3px;
   height: 1.5rem;
   width: fit-content;
   min-width: 10px;
-  align-items: flex-start;
   color: var(--color-text-dark);
   margin-bottom: 3px;
   font-family: var(--content-font);
 }
 
+.GenNode svg {
+  z-index: 10;
+}
+
+.GenNode-content {
+  padding: 0 3px;
+  z-index: 100;
+}
+
 .Generations {
   display: flex;
   flex-direction: row;
-  border-top: solid 2px var(--primary);
+  /* border-top: solid 2px var(--primary); */
   height: 50%;
   margin: 15px 30px;
   padding: 15px 0;
@@ -238,6 +247,8 @@ button:hover {
 .Generation {
   padding: 10px;
   margin-right: 12px;
+  width: 18vw;
+  min-width: 18vw;
   /* border: solid 2px var(--primary); */
   border-radius: 10px;
   box-shadow: rgba(5, 0, 41, 0.25) 0px 6px 12px -2px,
@@ -247,11 +258,14 @@ button:hover {
 .horiz-content {
   scrollbar-color: var(--primary) var(--bg);
   overflow: auto;
-  flex-direction: row-reverse;
   display: flex;
 }
 
-.horiz-content > div {
+.horiz-content-reverse {
+  flex-direction: row-reverse;
+}
+
+.horiz-content-reverse > .horiz-content-reverse-data {
   display: flex;
   flex-direction: row;
 }

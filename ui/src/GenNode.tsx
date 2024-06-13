@@ -9,12 +9,13 @@ const GenNode = forwardRef<
   ref
 ) {
   return (
-    <div
-      className="GenNode"
-      ref={ref}
-      style={{ backgroundColor: getNodeColor(node, totalProb) }}
-    >
-      {node.content.replace(/▁/g, "").replace(/<0x0A>/g, "\\n")}
+    <div className="GenNode" ref={ref}>
+      <div
+        className="GenNode-content"
+        style={{ backgroundColor: getNodeColor(node, totalProb) }}
+      >
+        {node.content.replace(/▁/g, "").replace(/<0x0A>/g, "\\n")}
+      </div>
     </div>
   );
 });
