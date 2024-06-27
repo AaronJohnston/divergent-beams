@@ -34,11 +34,6 @@ function Generations({ levels }: { levels: LevelSpec[] }) {
         current = next;
       }
 
-      console.log(
-        lastNode.prob,
-        logSumExpValue,
-        Math.exp(lastNode.prob - logSumExpValue)
-      );
       generations.push({
         content: generation
           .reverse()

@@ -3,6 +3,7 @@ export type LevelSpec = {
   level_type: "gather" | "sample";
   duration: number;
   nodes: NodeSpec[];
+  finished: FinishedSpec[];
 };
 
 export type NodeSpec = {
@@ -11,6 +12,12 @@ export type NodeSpec = {
   parent?: number;
   aunts?: number[];
   status?: string[];
+};
+
+export type FinishedSpec = {
+  content: string;
+  prob: number;
+  parent: number;
 };
 
 export type PromptOptions = {

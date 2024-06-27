@@ -13,8 +13,8 @@ function PromptInput({
   const [maxBeams, setMaxBeams] = useState(5);
   const [maxNewTokens, setMaxNewTokens] = useState(50);
   const [topP, setTopP] = useState(0.9);
-  const [topK, setTopK] = useState(5);
-  const [topPDecayOn, setTopPDecayOn] = useState(false);
+  const [topK, setTopK] = useState(3);
+  const [topPDecayOn, setTopPDecayOn] = useState(true);
   const [topPDecay, setTopPDecay] = useState(0.95);
   const [gatherAlgo, setGatherAlgo] = useState<string>("farthest_neighbors");
 
@@ -64,6 +64,7 @@ function PromptInput({
               className="PromptInput-number"
               type="number"
               value={topPDecay}
+              step={(0.01).toFixed(2)}
               onChange={(e) => setTopPDecay(parseFloat(e.target.value))}
             ></input>
             TOP P DECAY FACTOR

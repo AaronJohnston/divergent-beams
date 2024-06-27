@@ -42,39 +42,53 @@ class InferenceTensor:
         self.tokenizer = AutoTokenizer.from_pretrained(
             "microsoft/Phi-3-mini-4k-instruct")
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.eos_token_id = 32007
 
         self.batch_size = 8
         
-    def candidates_generator(self, top_p: float, top_p_decay: float, top_k: float, max_beams: int, max_new_tokens: int, gatherAlgo: str, prompt: str):
+    def candidates_generator(self, top_p: float, top_p_decay: float, top_k: float, max_beams: int, max_new_tokens: int, gather_algo: str, prompt: str):
         candidates, candidate_logprobs = self._init_candidates(prompt)
+        all_finished = []
+        all_finished_logprobs = []
+        
         for level_idx in range(max_new_tokens):
             start = time.perf_counter()
             logits, embeddings = self._infer(candidates, candidate_logprobs)
             
             if candidates.shape[0] > max_beams:
-                if gatherAlgo == 'k_means':
+                if gather_algo == 'k_means':
                     candidates, candidate_parents, candidate_aunts, candidate_logprobs, logits = self._k_means(logits, embeddings, candidates, candidate_logprobs, max_beams)
                     inference_duration = time.perf_counter() - start
+                    start = time.perf_counter() # Reset timing for top_p
                     print('K MEANS PRIOR {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
                     yield self._format_gather(level_idx, 'k', candidates, candidate_parents, candidate_aunts, candidate_logprobs, inference_duration)
                     print('K MEANS AFTER {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
 
-                elif gatherAlgo == 'farthest_neighbors':
+                elif gather_algo == 'farthest_neighbors':
                     candidates, candidate_parents, candidate_aunts, candidate_logprobs, logits = self._farthest_neighbors(logits, embeddings, candidates, candidate_logprobs, max_beams)
                     inference_duration = time.perf_counter() - start
+                    start = time.perf_counter() # Reset timing for top_p
                     print('F NEIGHBORS PRIOR {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
                     yield self._format_gather(level_idx, 'f', candidates, candidate_parents, candidate_aunts, candidate_logprobs, inference_duration)
                     print('F NEIGHBORS AFTER {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
-
-
+            
             candidates, candidate_parents, candidate_logprobs = self._top_p(logits, candidates, candidate_logprobs, top_p, top_k)
             inference_duration = time.perf_counter() - start
+            logits, candidates, candidate_logprobs, max_beams, finished, finished_parents, finished_logprobs = self._select_finished(logits, candidates, candidate_logprobs, max_beams)
+            if finished.shape[0] > 0:
+                all_finished.extend(finished)
+                all_finished_logprobs.extend(finished_logprobs)
             print('TOP P PRIOR {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
-            yield self._format_top_p(level_idx, candidates, candidate_parents, candidate_logprobs, inference_duration)
+            yield self._format_top_p(level_idx, candidates, candidate_parents, candidate_logprobs, inference_duration, finished, finished_parents, finished_logprobs)
             print('TOP P AFTER {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
             top_p *= top_p_decay
+            
+            if candidates.shape[0] == 0:
+                break
 
         yield f"event: message\nid: END\ndata: []\n\n"
+        return all_finished, all_finished_logprobs
+    
 
     def _format_gather(self, suffix, level_idx, candidates, candidate_parents, candidate_aunts, candidate_logprobs, duration):
         candidate_texts = self.tokenizer.convert_ids_to_tokens(candidates[:, -1], skip_special_tokens=True)
@@ -85,13 +99,20 @@ class InferenceTensor:
         data = json.dumps({'id': idx, 'level_type': 'gather', 'duration': duration, 'nodes': candidate_dicts})
         return f"event: message\nid: {idx}\"\ndata: {data}\n\n"
 
-    def _format_top_p(self, level_idx, candidates, candidate_parents, candidate_logprobs, duration):
-        candidate_texts = self.tokenizer.convert_ids_to_tokens(candidates[:, -1], skip_special_tokens=True)
+    def _format_top_p(self, level_idx, candidates, candidate_parents, candidate_logprobs, duration, finished, finished_parents, finished_logprobs):
+        candidate_texts = self.tokenizer.convert_ids_to_tokens(candidates[:, -1])
         candidate_dicts = []
         idx = f"{level_idx}-p"
         for i in range(len(candidate_texts)):
             candidate_dicts.append({'content': candidate_texts[i], 'parent': candidate_parents[i], 'prob': candidate_logprobs[i].item()})
-        data = json.dumps({'id': idx, 'level_type': 'sample', 'duration': duration, 'nodes': candidate_dicts})
+        
+        finished_texts = self.tokenizer.batch_decode(finished, skip_special_tokens=True)
+        finished_parents = finished_parents.tolist()
+        finished_dicts = []
+        for i in range(len(finished_texts)):
+            finished_dicts.append({'content': finished_texts[i], 'parent': finished_parents[i], 'prob': finished_logprobs[i].item()})
+        
+        data = json.dumps({'id': idx, 'level_type': 'sample', 'duration': duration, 'nodes': candidate_dicts, 'finished': finished_dicts})
         return f"event: message\nid: {idx}\ndata: {data}\n\n"
 
 
@@ -187,6 +208,26 @@ class InferenceTensor:
         
         return new_candidates, new_candidate_parents, new_candidate_aunts, new_candidate_logprobs, new_candidate_logits
 
+    
+    def _select_finished(self, logits, candidates, candidate_logprobs, max_beams):
+        finished_mask = candidates[:,-1] == self.eos_token_id
+        unfinished_mask = ~finished_mask
+        D(finished_mask, 'finished_mask')
+        
+        new_logits = logits[unfinished_mask]
+        new_candidates = candidates[unfinished_mask]
+        new_candidate_logprobs = candidate_logprobs[unfinished_mask]
+        new_max_beams = max_beams - finished_mask.sum()
+        
+        finished = candidates[finished_mask][:,:-1] # Remove the EOS token
+        D(finished, 'finished')
+        finished_parents = torch.arange(candidates.shape[0], device=self.device)[finished_mask]
+        D(finished_parents, 'finished_parents')
+        finished_logprobs = candidate_logprobs[finished_mask]
+        D(finished_logprobs, 'finished_logprobs')
+        
+        return new_logits, new_candidates, new_candidate_logprobs, new_max_beams, finished, finished_parents, finished_logprobs
+    
 
     def _top_p(self, logits, candidates, candidate_logprobs, top_p, top_k):
         D(candidates, 'candidates')
