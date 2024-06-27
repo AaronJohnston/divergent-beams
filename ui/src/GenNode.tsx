@@ -5,14 +5,18 @@ const GenNode = forwardRef<HTMLDivElement, { node: NodeSpec }>(function GenNode(
   { node }: { node: NodeSpec },
   ref
 ) {
-  console.log(node.content);
+  let displayContent = node.content.replace(/▁/g, "").replace(/<0x0A>/g, "\\n");
+  if (displayContent === "") {
+    displayContent = "<SPECIAL>";
+  }
+
   return (
     <div className="GenNode" ref={ref}>
       <div
         className="GenNode-content"
         style={{ backgroundColor: getNodeColor(node) }}
       >
-        {node.content.replace(/▁/g, "").replace(/<0x0A>/g, "\\n")}
+        {displayContent}
       </div>
     </div>
   );

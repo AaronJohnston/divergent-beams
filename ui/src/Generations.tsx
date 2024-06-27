@@ -23,11 +23,6 @@ function Generations({
   }
 
   if (levels.length > 0) {
-    const activeGenerations: {
-      content: string;
-      prob: number;
-      isActive: boolean;
-    }[] = [];
     for (const lastNode of levels[levels.length - 1].nodes) {
       let current = lastNode;
       const generation = [current.content];
@@ -46,7 +41,7 @@ function Generations({
         current = next;
       }
 
-      activeGenerations.push({
+      generations.push({
         content: generation
           .reverse()
           .join("")
@@ -56,10 +51,9 @@ function Generations({
         isActive: true,
       });
     }
-
-    activeGenerations.sort((a, b) => b.prob - a.prob);
-    generations.push(...activeGenerations);
   }
+
+  generations.sort((a, b) => b.prob - a.prob);
 
   const minValue =
     -0.1 *
