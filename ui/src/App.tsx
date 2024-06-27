@@ -14,6 +14,8 @@ function App() {
   const [levels, setLevels] = useState<LevelSpec[]>([]);
   const [finished, setFinished] = useState<FinishedSpec[]>([]);
   const [isError, setIsError] = useState<boolean>(false);
+  const [isGenerationComplete, setIsGenerationComplete] =
+    useState<boolean>(false);
 
   const cancelGeneration = () => {
     if (eventSource) {
@@ -29,6 +31,7 @@ function App() {
     const eventSource = new EventSource(url);
     setLevels([]);
     setFinished([]);
+    setIsGenerationComplete(false);
 
     eventSource.onerror = (event) => {
       console.error("EventSource error:", event);
@@ -40,6 +43,7 @@ function App() {
       if (event.lastEventId === "END") {
         console.log("CLOSING EVENT SOURCE");
         eventSource.close();
+        setIsGenerationComplete(true);
         return;
       }
       const data: LevelSpec = JSON.parse(event.data);
@@ -70,7 +74,11 @@ function App() {
           cancelGeneration={cancelGeneration}
         ></GeneratingMenu>
         <GenTree levels={levels}></GenTree>
-        <Generations levels={levels} finished={finished}></Generations>
+        <Generations
+          levels={levels}
+          finished={finished}
+          isGenerationComplete={isGenerationComplete}
+        ></Generations>
       </div>
     </div>
   );

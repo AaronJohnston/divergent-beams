@@ -1,11 +1,13 @@
 function Generation({
   content,
   prob,
-  finished,
+  isActive,
+  isGenerationComplete,
 }: {
   content: string;
   prob: number;
-  finished: boolean;
+  isActive: boolean;
+  isGenerationComplete: boolean;
 }) {
   return (
     <div
@@ -13,7 +15,14 @@ function Generation({
       style={{ backgroundColor: getGenerationColor(prob) }}
     >
       <div className="Generation-content">{content}</div>
-      {finished && <div className="Generation-finished">✓ Complete</div>}
+      {!isActive && (
+        <div className="Generation-finished">✓ Complete (Generated EOS)</div>
+      )}
+      {isActive && isGenerationComplete && (
+        <div className="Generation-finished">
+          ✓ Complete (Hit Max New Tokens)
+        </div>
+      )}
     </div>
   );
 }

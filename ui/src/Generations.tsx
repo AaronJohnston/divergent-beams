@@ -5,23 +5,29 @@ import { logSumExp } from "./utils";
 function Generations({
   levels,
   finished,
+  isGenerationComplete,
 }: {
   levels: LevelSpec[];
   finished: FinishedSpec[];
+  isGenerationComplete: boolean;
 }) {
-  const generations: { content: string; prob: number }[] = [];
+  const generations: { content: string; prob: number; isActive: boolean }[] =
+    [];
+
+  for (const finishedGeneration of finished) {
+    generations.push({
+      content: finishedGeneration.content,
+      prob: finishedGeneration.prob,
+      isActive: false,
+    });
+  }
 
   if (levels.length > 0) {
-    const minValue =
-      -0.1 *
-      levels[levels.length - 1].nodes.reduce(
-        (acc, node) => Math.min(acc, node.prob),
-        0
-      ); // Smooth out normalized probabilities
-    const logSumExpValue = logSumExp(
-      levels[levels.length - 1].nodes.map((node) => node.prob / minValue)
-    );
-
+    const activeGenerations: {
+      content: string;
+      prob: number;
+      isActive: boolean;
+    }[] = [];
     for (const lastNode of levels[levels.length - 1].nodes) {
       let current = lastNode;
       const generation = [current.content];
@@ -40,38 +46,45 @@ function Generations({
         current = next;
       }
 
-      generations.push({
+      activeGenerations.push({
         content: generation
           .reverse()
           .join("")
           .replace(/▁/g, " ")
           .replace(/<0x0A>/g, "\n"),
-        prob: Math.exp(lastNode.prob / minValue - logSumExpValue),
+        prob: lastNode.prob,
+        isActive: true,
       });
     }
 
-    generations.sort((a, b) => b.prob - a.prob);
+    activeGenerations.sort((a, b) => b.prob - a.prob);
+    generations.push(...activeGenerations);
   }
+
+  const minValue =
+    -0.1 *
+    generations.reduce((acc, generation) => Math.min(acc, generation.prob), 0); // Smooth out normalized probabilities
+  const logSumExpValue = logSumExp(
+    generations.map((node) => node.prob / minValue)
+  );
+
+  const normalizedGenerations = generations.map((generation) => {
+    return {
+      ...generation,
+      prob: Math.exp(generation.prob / minValue - logSumExpValue),
+    };
+  });
 
   return (
     <div className="Generations horiz-scroll">
-      {finished.map((finished) => {
-        return (
-          <Generation
-            key={finished.content}
-            content={finished.content}
-            prob={finished.prob}
-            finished={true}
-          />
-        );
-      })}
-      {generations.map((generation) => {
+      {normalizedGenerations.map((generation) => {
         return (
           <Generation
             key={generation.content}
             content={generation.content}
             prob={generation.prob}
-            finished={false}
+            isActive={generation.isActive}
+            isGenerationComplete={isGenerationComplete}
           />
         );
       })}

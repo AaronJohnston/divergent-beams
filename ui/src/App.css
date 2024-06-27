@@ -288,6 +288,8 @@ button:hover {
 }
 
 .Generation {
+  display: flex;
+  flex-direction: column;
   padding: 10px;
   margin-right: 12px;
   width: 18vw;
