@@ -1,10 +1,15 @@
 import Generation from "./Generation";
 import { LevelSpec } from "./types";
+import { logSumExp } from "./utils";
 
 function Generations({ levels }: { levels: LevelSpec[] }) {
-  const generations = [];
+  const generations: { content: string; prob: number }[] = [];
 
   if (levels.length > 0) {
+    const logSumExpValue = logSumExp(
+      levels[levels.length - 1].nodes.map((node) => node.prob)
+    );
+
     for (const lastNode of levels[levels.length - 1].nodes) {
       let current = lastNode;
       const generation = [current.content];
@@ -23,23 +28,20 @@ function Generations({ levels }: { levels: LevelSpec[] }) {
         current = next;
       }
 
+      console.log(
+        lastNode.prob,
+        logSumExpValue,
+        Math.exp(lastNode.prob - logSumExpValue)
+      );
       generations.push({
         content: generation
           .reverse()
           .join("")
           .replace(/▁/g, " ")
           .replace(/<0x0A>/g, "<br />"),
-        prob: lastNode.prob,
+        prob: Math.exp(lastNode.prob - logSumExpValue),
       });
     }
-
-    const largestLogProb =
-      -1 *
-      generations.reduce(
-        (acc, generation) => Math.min(acc, generation.prob),
-        0
-      );
-    console.log(largestLogProb);
 
     generations.sort((a, b) => b.prob - a.prob);
   }
