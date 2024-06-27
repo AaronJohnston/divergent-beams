@@ -298,6 +298,10 @@ button:hover {
     rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 }
 
+.Generation-content {
+  white-space: pre-line;
+}
+
 .Generation-finished {
   margin-top: auto;
   font-style: italic;

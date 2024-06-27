@@ -45,7 +45,7 @@ function Generations({
           .reverse()
           .join("")
           .replace(/▁/g, " ")
-          .replace(/<0x0A>/g, "<br />"),
+          .replace(/<0x0A>/g, "\n"),
         prob: Math.exp(lastNode.prob / minValue - logSumExpValue),
       });
     }
