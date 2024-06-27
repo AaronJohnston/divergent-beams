@@ -3,7 +3,6 @@ import { LevelSpec } from "./types";
 
 function Generations({ levels }: { levels: LevelSpec[] }) {
   const generations = [];
-  let totalProb = 1.0;
 
   if (levels.length > 0) {
     for (const lastNode of levels[levels.length - 1].nodes) {
@@ -34,12 +33,15 @@ function Generations({ levels }: { levels: LevelSpec[] }) {
       });
     }
 
-    generations.sort((a, b) => b.prob - a.prob);
+    const largestLogProb =
+      -1 *
+      generations.reduce(
+        (acc, generation) => Math.min(acc, generation.prob),
+        0
+      );
+    console.log(largestLogProb);
 
-    totalProb = levels[levels.length - 1].nodes.reduce(
-      (acc, node) => acc + node.prob,
-      0
-    );
+    generations.sort((a, b) => b.prob - a.prob);
   }
 
   return (
@@ -50,7 +52,6 @@ function Generations({ levels }: { levels: LevelSpec[] }) {
             key={generation.content}
             content={generation.content}
             prob={generation.prob}
-            totalProb={totalProb}
           />
         );
       })}

@@ -1,24 +1,16 @@
-function Generation({
-  content,
-  prob,
-  totalProb,
-}: {
-  content: string;
-  prob: number;
-  totalProb: number;
-}) {
+function Generation({ content, prob }: { content: string; prob: number }) {
   return (
     <div
       className="Generation"
-      style={{ backgroundColor: getGenerationColor(prob, totalProb) }}
+      style={{ backgroundColor: getGenerationColor(prob) }}
     >
       <div className="Generation-content">{content}</div>
     </div>
   );
 }
 
-function getGenerationColor(prob: number, totalProb: number) {
-  return `rgba(247, 151, 141, ${(prob / totalProb) * 0.8 + 0.2})`;
+function getGenerationColor(prob: number) {
+  return `rgba(247, 151, 141, ${prob * 0.8 + 0.2})`;
 }
 
 export default Generation;
