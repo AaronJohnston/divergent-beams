@@ -297,6 +297,10 @@ button:hover {
     rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 }
 
+.Generation-finished {
+  font-style: italic;
+}
+
 .horiz-scroll {
   scrollbar-color: var(--primary) var(--bg);
   overflow: auto;

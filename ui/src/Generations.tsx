@@ -1,8 +1,14 @@
 import Generation from "./Generation";
-import { LevelSpec } from "./types";
+import { FinishedSpec, LevelSpec } from "./types";
 import { logSumExp } from "./utils";
 
-function Generations({ levels }: { levels: LevelSpec[] }) {
+function Generations({
+  levels,
+  finished,
+}: {
+  levels: LevelSpec[];
+  finished: FinishedSpec[];
+}) {
   const generations: { content: string; prob: number }[] = [];
 
   if (levels.length > 0) {
@@ -49,12 +55,23 @@ function Generations({ levels }: { levels: LevelSpec[] }) {
 
   return (
     <div className="Generations horiz-scroll">
+      {finished.map((finished) => {
+        return (
+          <Generation
+            key={finished.content}
+            content={finished.content}
+            prob={finished.prob}
+            finished={true}
+          />
+        );
+      })}
       {generations.map((generation) => {
         return (
           <Generation
             key={generation.content}
             content={generation.content}
             prob={generation.prob}
+            finished={false}
           />
         );
       })}

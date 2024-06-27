@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./App.css";
 import GenTree from "./GenTree";
 import PromptInput from "./PromptInput";
-import { LevelSpec, PromptOptions } from "./types";
+import { FinishedSpec, LevelSpec, PromptOptions } from "./types";
 import Generations from "./Generations";
 import GeneratingMenu from "./GeneratingMenu";
 
@@ -12,6 +12,7 @@ const TREE_ENDPOINT =
 function App() {
   const [eventSource, setEventSource] = useState<EventSource | null>(null);
   const [levels, setLevels] = useState<LevelSpec[]>([]);
+  const [finished, setFinished] = useState<FinishedSpec[]>([]);
   const [isError, setIsError] = useState<boolean>(false);
 
   const cancelGeneration = () => {
@@ -42,6 +43,12 @@ function App() {
       }
       const data: LevelSpec = JSON.parse(event.data);
       setLevels((levels: LevelSpec[]) => [...levels, data]);
+      if (data.finished) {
+        setFinished((finished: FinishedSpec[]) => [
+          ...finished,
+          ...data.finished,
+        ]);
+      }
     };
 
     setEventSource(eventSource);
@@ -62,7 +69,7 @@ function App() {
           cancelGeneration={cancelGeneration}
         ></GeneratingMenu>
         <GenTree levels={levels}></GenTree>
-        <Generations levels={levels}></Generations>
+        <Generations levels={levels} finished={finished}></Generations>
       </div>
     </div>
   );

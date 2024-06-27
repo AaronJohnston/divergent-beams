@@ -74,7 +74,7 @@ class InferenceTensor:
             
             candidates, candidate_parents, candidate_logprobs = self._top_p(logits, candidates, candidate_logprobs, top_p, top_k)
             inference_duration = time.perf_counter() - start
-            logits, candidates, candidate_logprobs, max_beams, finished, finished_parents, finished_logprobs = self._select_finished(logits, candidates, candidate_logprobs, max_beams)
+            candidates, candidate_parents, candidate_logprobs, max_beams, finished, finished_parents, finished_logprobs = self._select_finished(candidates, candidate_parents, candidate_logprobs, max_beams)
             if finished.shape[0] > 0:
                 all_finished.extend(finished)
                 all_finished_logprobs.extend(finished_logprobs)
@@ -209,13 +209,13 @@ class InferenceTensor:
         return new_candidates, new_candidate_parents, new_candidate_aunts, new_candidate_logprobs, new_candidate_logits
 
     
-    def _select_finished(self, logits, candidates, candidate_logprobs, max_beams):
+    def _select_finished(self, candidates, candidate_parents, candidate_logprobs, max_beams):
         finished_mask = candidates[:,-1] == self.eos_token_id
         unfinished_mask = ~finished_mask
         D(finished_mask, 'finished_mask')
         
-        new_logits = logits[unfinished_mask]
         new_candidates = candidates[unfinished_mask]
+        new_candidate_parents = candidate_parents[unfinished_mask]
         new_candidate_logprobs = candidate_logprobs[unfinished_mask]
         new_max_beams = max_beams - finished_mask.sum()
         
@@ -226,7 +226,7 @@ class InferenceTensor:
         finished_logprobs = candidate_logprobs[finished_mask]
         D(finished_logprobs, 'finished_logprobs')
         
-        return new_logits, new_candidates, new_candidate_logprobs, new_max_beams, finished, finished_parents, finished_logprobs
+        return new_candidates, new_candidate_parents, new_candidate_logprobs, new_max_beams, finished, finished_parents, finished_logprobs
     
 
     def _top_p(self, logits, candidates, candidate_logprobs, top_p, top_k):

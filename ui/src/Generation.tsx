@@ -1,10 +1,19 @@
-function Generation({ content, prob }: { content: string; prob: number }) {
+function Generation({
+  content,
+  prob,
+  finished,
+}: {
+  content: string;
+  prob: number;
+  finished: boolean;
+}) {
   return (
     <div
       className="Generation"
       style={{ backgroundColor: getGenerationColor(prob) }}
     >
       <div className="Generation-content">{content}</div>
+      {finished && <div className="Generation-finished">✓ Complete</div>}
     </div>
   );
 }
