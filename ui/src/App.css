@@ -299,6 +299,7 @@ button:hover {
 }
 
 .Generation-finished {
+  margin-top: auto;
   font-style: italic;
 }
 

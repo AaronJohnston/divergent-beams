@@ -47,7 +47,7 @@ class InferenceTensor:
         self.batch_size = 8
         
     def candidates_generator(self, top_p: float, top_p_decay: float, top_k: float, max_beams: int, max_new_tokens: int, gather_algo: str, prompt: str):
-        candidates, candidate_logprobs = self._init_candidates(prompt)
+        candidates, candidate_logprobs, prompt_len = self._init_candidates(prompt)
         all_finished = []
         all_finished_logprobs = []
         
@@ -79,7 +79,7 @@ class InferenceTensor:
                 all_finished.extend(finished)
                 all_finished_logprobs.extend(finished_logprobs)
             print('TOP P PRIOR {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
-            yield self._format_top_p(level_idx, candidates, candidate_parents, candidate_logprobs, inference_duration, finished, finished_parents, finished_logprobs)
+            yield self._format_top_p(level_idx, candidates, candidate_parents, candidate_logprobs, inference_duration, finished, finished_parents, finished_logprobs, prompt_len)
             print('TOP P AFTER {}: ({}) {} candidates, {} inference time, {} total time'.format(level_idx, time.perf_counter(), candidates.shape[0], inference_duration, time.perf_counter() - start))
             top_p *= top_p_decay
             
@@ -99,14 +99,14 @@ class InferenceTensor:
         data = json.dumps({'id': idx, 'level_type': 'gather', 'duration': duration, 'nodes': candidate_dicts})
         return f"event: message\nid: {idx}\"\ndata: {data}\n\n"
 
-    def _format_top_p(self, level_idx, candidates, candidate_parents, candidate_logprobs, duration, finished, finished_parents, finished_logprobs):
+    def _format_top_p(self, level_idx, candidates, candidate_parents, candidate_logprobs, duration, finished, finished_parents, finished_logprobs, prompt_len):
         candidate_texts = self.tokenizer.convert_ids_to_tokens(candidates[:, -1])
         candidate_dicts = []
         idx = f"{level_idx}-p"
         for i in range(len(candidate_texts)):
             candidate_dicts.append({'content': candidate_texts[i], 'parent': candidate_parents[i], 'prob': candidate_logprobs[i].item()})
         
-        finished_texts = self.tokenizer.batch_decode(finished, skip_special_tokens=True)
+        finished_texts = self.tokenizer.batch_decode(finished[:,prompt_len:], skip_special_tokens=False)
         finished_parents = finished_parents.tolist()
         finished_dicts = []
         for i in range(len(finished_texts)):
@@ -124,7 +124,7 @@ class InferenceTensor:
         candidates = inputs.input_ids.to(self.device)
         candidate_logprobs = torch.zeros((1), dtype=torch.float32, device=self.device)
 
-        return candidates, candidate_logprobs
+        return candidates, candidate_logprobs, inputs.input_ids.shape[1]
 
     def _k_means(self, logits, embeddings, candidates, candidate_logprobs, max_beams):
         D(candidates, 'candidates')
