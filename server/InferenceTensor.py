@@ -78,21 +78,19 @@ class InferenceTensor:
 
     def _format_gather(self, suffix, level_idx, candidates, candidate_parents, candidate_aunts, candidate_logprobs, duration):
         candidate_texts = self.tokenizer.convert_ids_to_tokens(candidates[:, -1], skip_special_tokens=True)
-        candidate_probs = candidate_logprobs.exp()
         candidate_dicts = []
         idx = f"{level_idx}-{suffix}"
         for i in range(len(candidate_texts)):
-            candidate_dicts.append({'content': candidate_texts[i], 'parent': candidate_parents[i], 'aunts': candidate_aunts[i], 'prob': candidate_probs[i].item()})
+            candidate_dicts.append({'content': candidate_texts[i], 'parent': candidate_parents[i], 'aunts': candidate_aunts[i], 'prob': candidate_logprobs[i].item()})
         data = json.dumps({'id': idx, 'level_type': 'gather', 'duration': duration, 'nodes': candidate_dicts})
         return f"event: message\nid: {idx}\"\ndata: {data}\n\n"
 
     def _format_top_p(self, level_idx, candidates, candidate_parents, candidate_logprobs, duration):
         candidate_texts = self.tokenizer.convert_ids_to_tokens(candidates[:, -1], skip_special_tokens=True)
-        candidate_probs = candidate_logprobs.exp()
         candidate_dicts = []
         idx = f"{level_idx}-p"
         for i in range(len(candidate_texts)):
-            candidate_dicts.append({'content': candidate_texts[i], 'parent': candidate_parents[i], 'prob': candidate_probs[i].item()})
+            candidate_dicts.append({'content': candidate_texts[i], 'parent': candidate_parents[i], 'prob': candidate_logprobs[i].item()})
         data = json.dumps({'id': idx, 'level_type': 'sample', 'duration': duration, 'nodes': candidate_dicts})
         return f"event: message\nid: {idx}\ndata: {data}\n\n"
 
