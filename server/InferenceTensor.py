@@ -215,7 +215,13 @@ class InferenceTensor:
         D(finished_mask, 'finished_mask')
         
         new_candidates = candidates[unfinished_mask]
-        new_candidate_parents = candidate_parents[unfinished_mask]
+        if finished_mask.sum() == 0:
+            new_candidate_parents = candidate_parents
+        else:
+            new_candidate_parents = []
+            for i in range(len(candidate_parents)):
+                if unfinished_mask[i]:
+                    new_candidate_parents.append(candidate_parents[i])
         new_candidate_logprobs = candidate_logprobs[unfinished_mask]
         new_max_beams = max_beams - finished_mask.sum()
         
