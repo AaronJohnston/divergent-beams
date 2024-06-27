@@ -1,12 +1,17 @@
 import { useEffect, useMemo, useRef } from "react";
 import GenNode from "./GenNode";
 import { LevelSpec } from "./types";
+import { logSumExp } from "./utils";
 
 export default function GenLevel({ level }: { level: LevelSpec }) {
   const nodesRef = useRef<HTMLElement[]>([]);
 
   const rendered = useMemo(() => {
-    const totalProb = level.nodes.reduce((acc, node) => acc + node.prob, 0);
+    const minValue =
+      -0.1 * level.nodes.reduce((acc, node) => Math.min(acc, node.prob), 0); // Smooth out normalized probabilities
+    const logSumExpValue = logSumExp(
+      level.nodes.map((node) => node.prob / minValue)
+    );
 
     return (
       <div className="GenLevel">
@@ -21,8 +26,10 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
             return (
               <GenNode
                 key={idx}
-                node={node}
-                totalProb={totalProb}
+                node={{
+                  ...node,
+                  prob: Math.exp(node.prob / minValue - logSumExpValue),
+                }}
                 ref={(elem: HTMLElement) => (nodesRef.current[idx] = elem)}
               />
             );
@@ -127,10 +134,6 @@ function drawEdge(
   }
 
   svg.appendChild(line);
-
-  // if (child.lastElementChild && child.lastElementChild.tagName === "svg") {
-  //   child.lastElementChild.remove();
-  // }
 
   child.appendChild(svg);
 }

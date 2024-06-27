@@ -6,8 +6,14 @@ function Generations({ levels }: { levels: LevelSpec[] }) {
   const generations: { content: string; prob: number }[] = [];
 
   if (levels.length > 0) {
+    const minValue =
+      -0.1 *
+      levels[levels.length - 1].nodes.reduce(
+        (acc, node) => Math.min(acc, node.prob),
+        0
+      ); // Smooth out normalized probabilities
     const logSumExpValue = logSumExp(
-      levels[levels.length - 1].nodes.map((node) => node.prob)
+      levels[levels.length - 1].nodes.map((node) => node.prob / minValue)
     );
 
     for (const lastNode of levels[levels.length - 1].nodes) {
@@ -39,7 +45,7 @@ function Generations({ levels }: { levels: LevelSpec[] }) {
           .join("")
           .replace(/▁/g, " ")
           .replace(/<0x0A>/g, "<br />"),
-        prob: Math.exp(lastNode.prob - logSumExpValue),
+        prob: Math.exp(lastNode.prob / minValue - logSumExpValue),
       });
     }
 
