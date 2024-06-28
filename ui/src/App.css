@@ -214,6 +214,10 @@ button:hover {
   top: calc(calc(40px - 1.5rem) / -2);
 }
 
+.GenTree-prompt.hidden {
+  display: none;
+}
+
 .GenLevel {
   display: flex;
   flex-direction: column;

@@ -9,7 +9,11 @@ export default function GenTree({ levels }: { levels: LevelSpec[] }) {
           <div className="GenLevel-label"></div>
           <div className="GenLevel-timing"></div>
           <div className="GenLevel-nodes">
-            <div className="GenTree-prompt">PROMPT</div>
+            <div
+              className={`GenTree-prompt ${levels.length > 0 ? "" : "hidden"}`}
+            >
+              PROMPT
+            </div>
           </div>
         </div>
         {levels.map((level) => (
