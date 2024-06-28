@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Hint({ title, text }: { title: string; text: string }) {
+function Hint({ children }: { children: React.ReactNode }) {
   // Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.
 
   const [isOpen, setIsOpen] = useState(false);
@@ -24,12 +24,7 @@ function Hint({ title, text }: { title: string; text: string }) {
           clip-rule="evenodd"
         />
       </svg>
-      {isOpen && (
-        <div className="Hint-text">
-          <h3>{title}</h3>
-          {text}
-        </div>
-      )}
+      {isOpen && <div className="Hint-text">{children}</div>}
     </div>
   );
 }

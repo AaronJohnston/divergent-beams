@@ -1,12 +1,10 @@
-import { forwardRef, useState } from "react";
+import { forwardRef } from "react";
 import { NodeSpec } from "./types";
 
 const GenNode = forwardRef<HTMLDivElement, { node: NodeSpec }>(function GenNode(
   { node }: { node: NodeSpec },
   ref
 ) {
-  // const [isOpen, setIsOpen] = useState(false);
-
   let displayContent = node.content.replace(/▁/g, "").replace(/<0x0A>/g, "\\n");
   if (displayContent === "") {
     displayContent = "<SPECIAL>";
@@ -17,21 +15,9 @@ const GenNode = forwardRef<HTMLDivElement, { node: NodeSpec }>(function GenNode(
       <div
         className="GenNode-content"
         style={{ backgroundColor: getNodeColor(node) }}
-        // onMouseEnter={() => setIsOpen(true)}
-        // onClick={() => setIsOpen(true)}
-        // onMouseLeave={() => setIsOpen(false)}
-        // onBlur={() => setIsOpen(false)}
       >
         {displayContent}
       </div>
-      {/* {isOpen && (
-        <div
-          className="GenNode-prob"
-          style={{ backgroundColor: getNodeColor(node) }}
-        >
-          logprob: {node.prob.toPrecision(3)}
-        </div>
-      )} */}
     </div>
   );
 });
