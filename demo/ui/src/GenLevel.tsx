@@ -30,7 +30,11 @@ export default function GenLevel({ level }: { level: LevelSpec }) {
                   ...node,
                   prob: Math.exp(node.prob / minValue - logSumExpValue),
                 }}
-                ref={(elem: HTMLElement) => (nodesRef.current[idx] = elem)}
+                ref={(elem: HTMLElement | null) => {
+                  if (elem) {
+                    nodesRef.current[idx] = elem;
+                  }
+                }}
               />
             );
           })}
