@@ -1,6 +1,12 @@
 import { useState } from "react";
 
-function Hint({ children }: { children: React.ReactNode }) {
+function Hint({
+  children,
+  width,
+}: {
+  children: React.ReactNode;
+  width?: string;
+}) {
   // Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.
 
   const [isOpen, setIsOpen] = useState(false);
@@ -24,7 +30,11 @@ function Hint({ children }: { children: React.ReactNode }) {
           clip-rule="evenodd"
         />
       </svg>
-      {isOpen && <div className="Hint-text">{children}</div>}
+      {isOpen && (
+        <div className="Hint-text" style={{ width }}>
+          {children}
+        </div>
+      )}
     </div>
   );
 }
