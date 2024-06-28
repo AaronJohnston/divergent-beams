@@ -44,6 +44,32 @@ TODO
 
 ## Running Demo Locally
 
+The demo consists of a UI and an inference server.
+
+### Server
+
+Note: the server is designed for use with a single NVidia GPU. Although Huggingface's Optimum library is
+used to try and automatically distribute tensors to devices as appropriate, the code is not tested using only
+a CPU, with AMD GPUs, or with multiple NVidia GPUs.
+
+```
+cd demo/server
+conda activate {env} # Or whichever python virtual environment manager you use
+pip install -r requirements.txt
+python main.py
+```
+
+### UI
+
+First, change the server URL (in `demo/ui/src/App.tsx`) to point to your running server instance.
+
+```
+cd demo/ui
+nvm use
+npm install
+npm run dev
+```
+
 ## Models
 
 This library operates using a model and tokenizer from the Huggingface Transformers library. Although any model/tokenizer pair can be passed in, it is currently only tested on models similar to Microsoft's Phi-3-mini-4k-instruct.
