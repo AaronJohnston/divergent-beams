@@ -38,9 +38,59 @@ each beam is consolidated into its closest representative.
 Each beam terminates when it hits the EOS token or the Max New
 Tokens limit.
 
-## Library API
+## Using Library
 
-TODO
+### Build
+
+```
+cd divergent-beams
+poetry build
+```
+
+### Install
+
+You can use pip to install the locally-built version of the library with `pip install local/path/to/divergent-beams-{version}.tar.gz`
+
+### Use
+
+Here's a complete usage example:
+
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from divergent_beams import DivergentBeams
+
+model = AutoModelForCausalLM.from_pretrained(
+    "microsoft/Phi-3-mini-4k-instruct",
+    torch_dtype=torch.bfloat16,
+    device_map='auto',
+    trust_remote_code=True,
+    use_cache=True,
+)
+tokenizer = AutoTokenizer.from_pretrained(
+    "microsoft/Phi-3-mini-4k-instruct"
+)
+eos_token_id = 32007  # Corresponds to <|end|> for Phi-3
+
+# Initialize
+divergentBeams = DivergentBeams(model, tokenizer, eos_token_id=eos_token_id, batch_size=8)
+
+# Parameters for generation
+top_p = 0.9
+top_p_decay = 0.99
+top_k = 3
+max_beams = 5
+max_new_tokens = 50
+gather_algo = 'farthest_neighbors'
+prompt = 'Generate a 3-utterance conversation between two participants.'
+
+# Generate
+sequences, sequence_logprobs = divergentBeams.generator(top_p=top_p, top_p_decay=top_p_decay, top_k=top_k, max_beams=max_beams, max_new_tokens=max_new_tokens, gather_algo=gather_algo, prompt=prompt)
+
+# Can also be used as a generator to get information about the algorithm state at each step, useful for debugging.
+for step_info in divergentBeams.generator(top_p=top_p, top_p_decay=top_p_decay, top_k=top_k, max_beams=max_beams, max_new_tokens=max_new_tokens, gather_algo=gather_algo, prompt=prompt):
+    print(step_info)
+
+```
 
 ## Running Demo Locally
 
