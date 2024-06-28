@@ -6,7 +6,7 @@ A library for sampling diverse outputs from an LLM's probability space.
 
 ## Demo
 
-https://aaronjohnston.me/projects/divergent-beams
+https://aaronjohnston.me/divergent-beams
 
 ## Divergent Beams Algorithm
 
