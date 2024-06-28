@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Switch from "react-switch";
 import { PromptOptions } from "./types";
+import Hint from "./Hint";
 
 function PromptInput({
   evaluatePrompt,
@@ -8,14 +9,14 @@ function PromptInput({
   evaluatePrompt: (promptOptions: PromptOptions) => void;
 }) {
   const [prompt, setPrompt] = useState(
-    "What is the closest star to the Earth?"
+    "What is the closest star to the Earth? Respond in 5 words."
   );
   const [maxBeams, setMaxBeams] = useState(5);
   const [maxNewTokens, setMaxNewTokens] = useState(50);
   const [topP, setTopP] = useState(0.9);
   const [topK, setTopK] = useState(3);
   const [topPDecayOn, setTopPDecayOn] = useState(true);
-  const [topPDecay, setTopPDecay] = useState(0.95);
+  const [topPDecay, setTopPDecay] = useState(0.99);
   const [gatherAlgo, setGatherAlgo] = useState<string>("farthest_neighbors");
 
   return (
@@ -35,6 +36,10 @@ function PromptInput({
             onChange={(e) => setTopP(parseFloat(e.target.value))}
           ></input>
           TOP-P
+          <Hint
+            title="TOP-P"
+            text="Top-P controls how much probability mass to sample for each beam at each step. A Top-P of 0.9 means top tokens will be selected until they represent 90% of the probability mass. Works with Top-K by choosing the most restrictive limit (whichever produces the fewest tokens at a given step)."
+          ></Hint>
         </label>
         <label className="PromptInput-label">
           <input
@@ -45,6 +50,10 @@ function PromptInput({
             onChange={(e) => setTopK(parseFloat(e.target.value))}
           ></input>
           TOP-K
+          <Hint
+            title="TOP-K"
+            text="Top-K controls the maximum number of tokens that can be sampled for each beam at each step. A Top-K of 3 means at most the 3 top tokens will be selected. Works with Top-P by choosing the most restrictive limit (whichever produces the fewest tokens at a given step)."
+          ></Hint>
         </label>
         <label className="PromptInput-label">
           <Switch
@@ -56,7 +65,11 @@ function PromptInput({
             onColor="#7fd293"
             offColor="#aaa"
           ></Switch>
-          TOP P DECAY
+          TOP-P DECAY
+          <Hint
+            title="TOP-P DECAY"
+            text="If enabled, the Top-P value will decay at each Sample step of the algorithm. This can help with diversity of the generations by favoring divergent choices earlier in the text, and speeds up the algorithm by preventing the tree from exploding in size."
+          ></Hint>
         </label>
         {topPDecayOn ? (
           <label className="PromptInput-label">
@@ -67,7 +80,11 @@ function PromptInput({
               step={(0.01).toFixed(2)}
               onChange={(e) => setTopPDecay(parseFloat(e.target.value))}
             ></input>
-            TOP P DECAY FACTOR
+            TOP-P DECAY FACTOR
+            <Hint
+              title="TOP-P DECAY FACTOR"
+              text="The factor to decay Top-P by. At each Sample step of the algorithm, after sampling for all active beams, Top-P will be multiplied by Top-P Decay Factor. A value of 0.99 means Top-P will decay by 1% at each step. A value of 1.0 means Top-P will not decay."
+            ></Hint>
           </label>
         ) : (
           <></>
@@ -80,6 +97,10 @@ function PromptInput({
             onChange={(e) => setMaxBeams(parseInt(e.target.value))}
           ></input>
           MAX BEAMS
+          <Hint
+            title="MAX BEAMS"
+            text="The max number of beams to keep active after each new token is generated. If a Sample step generates more than Max Beams, a Gather step will reduce their number to keep only the most diverse. A higher number of beams will increase the diversity of the generations, but will also slow down the algorithm."
+          ></Hint>
         </label>
         <label className="PromptInput-label">
           <input
@@ -90,6 +111,10 @@ function PromptInput({
             onChange={(e) => setMaxNewTokens(parseInt(e.target.value))}
           ></input>
           MAX NEW TOKENS
+          <Hint
+            title="MAX NEW TOKENS"
+            text="The max number of new tokens that can be generated in the algorithm."
+          ></Hint>
         </label>
         <label className="PromptInput-label">
           <select
@@ -100,6 +125,10 @@ function PromptInput({
             <option value="k_means">K-Means</option>
           </select>
           GATHER ALGO
+          <Hint
+            title="GATHER ALGO"
+            text="What algorithm to use during a Gather step to select the most diverse beams. kFN (K-Farthest Neighbors) will select those that are the farthest from each other, based on cosine distance between last hidden states. K-Means will cluster the beams based on last hidden states and select the most central ones. kFN is faster."
+          ></Hint>
         </label>
         <button
           className="PromptInput-submit"

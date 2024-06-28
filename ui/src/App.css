@@ -100,7 +100,7 @@ button:hover {
 .PromptInput-menu {
   display: flex;
   flex-direction: column;
-  width: 250px;
+  width: 300px;
   background-color: var(--primary);
   color: var(--light-text);
   padding: 15px;
@@ -307,6 +307,28 @@ button:hover {
 .Generation-finished {
   margin-top: auto;
   font-style: italic;
+}
+
+.Hint {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: relative;
+  margin-left: 0.5rem;
+}
+
+.Hint-text {
+  position: absolute;
+  top: 30px;
+  right: 0px;
+  min-width: 300px;
+  min-height: 200px;
+  padding: 20px;
+  background-color: var(--bg);
+  color: var(--primary);
+  box-shadow: rgba(5, 0, 41, 0.25) 0px 6px 12px -2px,
+    rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+  z-index: 100;
 }
 
 .horiz-scroll {
