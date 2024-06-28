@@ -6,7 +6,7 @@ A library for sampling diverse outputs from an LLM's probability space.
 
 ## Demo
 
-See demo at https://aaronjohnston.me/projects/divergent-beams
+https://aaronjohnston.me/projects/divergent-beams
 
 ## Divergent Beams Algorithm
 
@@ -38,7 +38,7 @@ each beam is consolidated into its closest representative.
 Each beam terminates when it hits the EOS token or the Max New
 Tokens limit.
 
-## Library
+## Library API
 
 TODO
 
