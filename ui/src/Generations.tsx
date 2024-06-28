@@ -11,13 +11,18 @@ function Generations({
   finished: FinishedSpec[];
   isGenerationComplete: boolean;
 }) {
-  const generations: { content: string; prob: number; isActive: boolean }[] =
-    [];
+  const generations: {
+    content: string;
+    prob: number;
+    originalProb: number;
+    isActive: boolean;
+  }[] = [];
 
   for (const finishedGeneration of finished) {
     generations.push({
       content: finishedGeneration.content,
       prob: finishedGeneration.prob,
+      originalProb: finishedGeneration.prob,
       isActive: false,
     });
   }
@@ -48,6 +53,7 @@ function Generations({
           .replace(/▁/g, " ")
           .replace(/<0x0A>/g, "\n"),
         prob: lastNode.prob,
+        originalProb: lastNode.prob,
         isActive: true,
       });
     }
@@ -77,6 +83,7 @@ function Generations({
             key={generation.content}
             content={generation.content}
             prob={generation.prob}
+            originalProb={generation.originalProb}
             isActive={generation.isActive}
             isGenerationComplete={isGenerationComplete}
           />
