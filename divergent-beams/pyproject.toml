@@ -3,7 +3,6 @@ name = "divergent-beams"
 version = "0.1.0"
 description = "A library for sampling diverse outputs from an LLM's probability space."
 authors = ["Aaron Johnston <aaron.johnston001@gmail.com>"]
-readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
