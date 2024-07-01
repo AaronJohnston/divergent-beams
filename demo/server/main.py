@@ -36,6 +36,8 @@ def tree(topP: float, topK: int, maxBeams: int, maxNewTokens: int, gatherAlgo: s
     return StreamingResponse(inference.candidates_generator(topP, topPDecay, topK, maxBeams, maxNewTokens, gatherAlgo, prompt), media_type="text/event-stream")
 
 
+# Allows running the demo server with `python main.py`.
+# In production, recommended to use a production server like gunicorn with uvicorn service workers.
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000, log_level="debug")
