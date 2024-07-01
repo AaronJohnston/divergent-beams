@@ -8,7 +8,7 @@ import GeneratingMenu from "./GeneratingMenu";
 import Hint from "./Hint";
 
 const TREE_ENDPOINT =
-  "http://ec2-52-89-34-232.us-west-2.compute.amazonaws.com/api/v1/tree";
+  "https://ec2-52-89-34-232.us-west-2.compute.amazonaws.com/api/v1/tree";
 
 function App() {
   const [eventSource, setEventSource] = useState<EventSource | null>(null);
