@@ -229,6 +229,7 @@ button:hover {
 .GenLevel-label {
   box-sizing: border-box;
   height: 1rem;
+  min-height: 1rem;
   line-height: 1rem;
   font-size: 0.8rem;
   font-weight: 700;
