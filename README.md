@@ -59,6 +59,9 @@ Here's a complete usage example:
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from divergent_beams import DivergentBeams
 
+import torch
+
+
 model = AutoModelForCausalLM.from_pretrained(
     "microsoft/Phi-3-mini-4k-instruct",
     torch_dtype=torch.bfloat16,
@@ -106,6 +109,7 @@ a CPU, with AMD GPUs, or with multiple NVidia GPUs.
 cd demo/server
 conda activate {env} # Or whichever python virtual environment manager you use
 pip install -r requirements.txt
+pip install local/path/to/divergent-beams-{version}.tar.gz
 python main.py
 ```
 
