@@ -1,8 +1,9 @@
 [tool.poetry]
-name = "divergent-beams"
+name = "divergent_beams"
 version = "0.1.0"
 description = "A library for sampling diverse outputs from an LLM's probability space."
 authors = ["Aaron Johnston <aaron.johnston001@gmail.com>"]
+
 
 [tool.poetry.dependencies]
 python = "^3.9"
