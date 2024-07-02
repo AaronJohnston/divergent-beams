@@ -120,8 +120,7 @@ class DivergentBeams:
 
 
     def _init_candidates(self, text: str):
-        prompt = "<|user|>\n{} <|end|>\n<|assistant|>".format(text)
-        inputs = self.tokenizer(prompt, return_tensors='pt')
+        inputs = self.tokenizer(text, return_tensors='pt')
 
         candidates = inputs.input_ids.to(self.device)
         candidate_logprobs = torch.zeros((1), dtype=torch.float32, device=self.device)

@@ -19,6 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Model-specific config
 model = AutoModelForCausalLM.from_pretrained(
     "microsoft/Phi-3-mini-4k-instruct",
     torch_dtype=torch.bfloat16,
@@ -30,7 +31,12 @@ tokenizer = AutoTokenizer.from_pretrained(
     "microsoft/Phi-3-mini-4k-instruct"
 )
 eos_token_id = 32007  # Corresponds to <|end|> for Phi-3
+def format_prompt(text):
+    return "<|user|>\n{} <|end|>\n<|assistant|>".format(text)
+
+
 divergentBeams = DivergentBeams(model, tokenizer, eos_token_id)
+
 
 @app.get("/api/status")
 def status():
@@ -39,7 +45,8 @@ def status():
 
 @app.get("/api/v1/tree")
 def tree(topP: float, topK: int, maxBeams: int, maxNewTokens: int, gatherAlgo: str, prompt: str, topPDecay: float = 1.0):
-    return StreamingResponse(divergentBeams.generator(topP, topPDecay, topK, maxBeams, maxNewTokens, gatherAlgo, prompt), media_type="text/event-stream")
+    return StreamingResponse(divergentBeams.generator(topP, topPDecay, topK, maxBeams, maxNewTokens, gatherAlgo, format_prompt(prompt)), media_type="text/event-stream")
+
 
 
 # Allows running the demo server with `python main.py`.
