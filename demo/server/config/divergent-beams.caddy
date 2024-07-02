@@ -1,0 +1,7 @@
+ec2-52-89-34-232.us-west-2.compute.amazonaws.com {
+  log
+
+  reverse_proxy unix//home/ec2-user/web/run/gunicorn.sock {
+    header_up Host {host}
+  }
+}

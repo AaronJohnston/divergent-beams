@@ -1,4 +1,4 @@
-source activate my_env && python -m gunicorn.app.wsgiapp \
+source activate pytorch && python -m gunicorn.app.wsgiapp \
     --access-logfile - \
     --worker-class uvicorn.workers.UvicornWorker \
     --workers 1 \

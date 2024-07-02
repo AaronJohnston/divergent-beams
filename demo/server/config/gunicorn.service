@@ -1,0 +1,12 @@
+[Unit]
+Description=gunicorn daemon
+After=network.target
+
+[Service]
+User=ec2-user
+WorkingDirectory=/home/ec2-user/web/server/divergent_beams/demo/server
+Restart=on-failure
+ExecStart=/bin/bash /home/ec2-user/web/server/divergent_beams/demo/server/config/start.sh
+
+[Install]
+WantedBy=multi-user.target
