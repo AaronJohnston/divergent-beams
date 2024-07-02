@@ -7,7 +7,7 @@ authors = ["Aaron Johnston <aaron.johnston001@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 transformers = "^4.42.2"
-torch = {version = "2.0.1+cu118", source = "torch118"}
+torch = {version = "2.0.1", source = "torch118"}
 torchmetrics = "^1.4.0"
 scikit-learn = "^1.5.0"
 
