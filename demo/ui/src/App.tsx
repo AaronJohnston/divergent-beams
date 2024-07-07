@@ -64,17 +64,7 @@ function App() {
     <div className="App-root">
       <header className="App-header">
         <h1>Divergent Beams</h1>
-        <div className="Model-select">
-          <label>
-            Model
-            <select>
-              <option value="microsoft/phi-3-mini-4k-instruct">
-                "microsoft/phi-3-mini-4k-instruct
-              </option>
-            </select>
-          </label>
-        </div>
-        <Hint width="500px">
+        <Hint width="500px" onRight={true}>
           <h3>Divergent Beams</h3>
           <p>
             A tool for exploring the possible outputs of a language model. While
@@ -111,6 +101,16 @@ function App() {
             model is supported.
           </p>
         </Hint>
+        <div className="Model-select">
+          <label>
+            Model
+            <select>
+              <option value="microsoft/phi-3-mini-4k-instruct">
+                microsoft/phi-3-mini-4k-instruct
+              </option>
+            </select>
+          </label>
+        </div>
       </header>
       <div className="App-content">
         <PromptInput evaluatePrompt={evaluatePrompt}></PromptInput>

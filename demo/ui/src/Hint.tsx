@@ -3,9 +3,11 @@ import { useState } from "react";
 function Hint({
   children,
   width,
+  onRight,
 }: {
   children: React.ReactNode;
   width?: string;
+  onRight?: boolean;
 }) {
   // Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.
 
@@ -31,7 +33,10 @@ function Hint({
         />
       </svg>
       {isOpen && (
-        <div className="Hint-text" style={{ width }}>
+        <div
+          className={`Hint-text ${onRight ? "Hint-text-right" : ""}`}
+          style={{ width }}
+        >
           {children}
         </div>
       )}
