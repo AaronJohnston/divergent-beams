@@ -5,8 +5,10 @@ from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 import torch
 
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from divergent_beams import DivergentBeams
+
+quantization_config = BitsAndBytesConfig(load_in_4bit=True)
 
 print('Resolved imports, initializing modules...')
 
@@ -26,6 +28,7 @@ model = AutoModelForCausalLM.from_pretrained(
     device_map='auto',
     trust_remote_code=True,
     use_cache=True,
+    quantization_config=quantization_config
 )
 tokenizer = AutoTokenizer.from_pretrained(
     "microsoft/Phi-3-mini-4k-instruct"
@@ -34,6 +37,9 @@ eos_token_id = 32007  # Corresponds to <|end|> for Phi-3
 def format_prompt(text):
     return "<|user|>\n{} <|end|>\n<|assistant|>".format(text)
 
+
+print('Finished initializing modules')
+print('Memory footprint', model.get_memory_footprint())
 
 divergentBeams = DivergentBeams(model, tokenizer, eos_token_id)
 

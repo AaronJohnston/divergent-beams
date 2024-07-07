@@ -64,6 +64,16 @@ function App() {
     <div className="App-root">
       <header className="App-header">
         <h1>Divergent Beams</h1>
+        <div className="Model-select">
+          <label>
+            Model
+            <select>
+              <option value="microsoft/phi-3-mini-4k-instruct">
+                "microsoft/phi-3-mini-4k-instruct
+              </option>
+            </select>
+          </label>
+        </div>
         <Hint width="500px">
           <h3>Divergent Beams</h3>
           <p>
