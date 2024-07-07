@@ -8,7 +8,7 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from divergent_beams import DivergentBeams
 
-quantization_config = BitsAndBytesConfig(load_in_4bit=True)
+# quantization_config = BitsAndBytesConfig(load_in_4bit=True)
 
 print('Resolved imports, initializing modules...')
 
@@ -28,7 +28,7 @@ model = AutoModelForCausalLM.from_pretrained(
     device_map='auto',
     trust_remote_code=True,
     use_cache=True,
-    quantization_config=quantization_config
+    # quantization_config=quantization_config
 )
 tokenizer = AutoTokenizer.from_pretrained(
     "microsoft/Phi-3-mini-4k-instruct"
