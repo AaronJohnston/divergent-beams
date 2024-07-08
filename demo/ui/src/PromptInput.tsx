@@ -9,14 +9,14 @@ function PromptInput({
   evaluatePrompt: (promptOptions: PromptOptions) => void;
 }) {
   const [prompt, setPrompt] = useState(
-    "What is the closest star to the Earth? Respond in 5 words."
+    "Can you write a CRON string to run every 5 minutes and also at 2:03pm every day? If possible, write the string with no explanation. If not, explain why in 1 sentence."
   );
   const [maxBeams, setMaxBeams] = useState(5);
   const [maxNewTokens, setMaxNewTokens] = useState(50);
   const [topP, setTopP] = useState(0.9);
-  const [topK, setTopK] = useState(3);
+  const [topK, setTopK] = useState(5);
   const [topPDecayOn, setTopPDecayOn] = useState(true);
-  const [topPDecay, setTopPDecay] = useState(0.99);
+  const [topPDecay, setTopPDecay] = useState(0.95);
   const [gatherAlgo, setGatherAlgo] = useState<string>("farthest_neighbors");
 
   return (
