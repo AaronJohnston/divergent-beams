@@ -320,8 +320,9 @@ button:hover {
   flex-direction: column;
   padding: 10px;
   margin-right: 12px;
-  width: 18vw;
-  min-width: 18vw;
+  width: 250px;
+  max-width: 250px;
+  min-width: 250px;
   /* border: solid 2px var(--primary); */
   border-radius: 10px;
   box-shadow: rgba(5, 0, 41, 0.25) 0px 6px 12px -2px,
