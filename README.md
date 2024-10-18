@@ -4,10 +4,6 @@ Aaron Johnston, 2024
 
 A library for sampling diverse outputs from an LLM's probability space.
 
-## Demo
-
-https://aaronjohnston.me/divergent-beams
-
 ## Divergent Beams Algorithm
 
 While most language model sampling strategies aim to produce the most
